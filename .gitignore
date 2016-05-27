@@ -1,0 +1,3 @@
+# Ignore generated .js files from TypeScript
+src/**/*.js
+lib
