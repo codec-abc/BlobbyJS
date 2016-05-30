@@ -1,4 +1,6 @@
 "use strict";
+const PlayerModule = require('../../../models/Player');
+let Player = PlayerModule.Player;
 const ScreenBase = require('../Screen');
 let Screen = ScreenBase.Screen;
 const ControlsManager = require('../../ControlsManager');
@@ -18,27 +20,22 @@ class GameScreen extends Screen {
     }
     setupPhysics() {
         this.m_engine = Engine.create(document.getElementById('GameScreen'));
-        this.m_boxA = Bodies.rectangle(400, 540, 80, 80);
-        this.m_boxA.isStatic = true;
-        var boxB = Bodies.rectangle(450, 50, 80, 80);
-        boxB.isStatic = true;
+        const playersSize = Matter.Vector.create(60, 80);
+        const playersSpeed = 7;
+        var firstPlayerPos = Matter.Vector.create(300, 540);
+        this.m_firstPlayer = new Player(firstPlayerPos, playersSize, playersSpeed);
+        this.m_firstPlayer.registerToPhysicsEngine(this.m_engine.world);
+        var secondPlayerPos = Matter.Vector.create(600, 540);
+        this.m_secondPlayer = new Player(firstPlayerPos, playersSize, playersSpeed);
+        this.m_secondPlayer.registerToPhysicsEngine(this.m_engine.world);
         var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-        World.add(this.m_engine.world, [this.m_boxA, boxB, ground]);
+        World.addBody(this.m_engine.world, ground);
         Engine.run(this.m_engine);
     }
     setupControls() {
-        this.addKeyboardCallback(Keyboard.LeftArrow, this.testMoveBoxLeft.bind(this));
-        this.addKeyboardCallback(Keyboard.RightArrow, this.testMoveBoxRight.bind(this));
-    }
-    testMoveBoxLeft() {
-        var force;
-        force = Matter.Vector.create(-7, 0);
-        Matter.Body.translate(this.m_boxA, force);
-    }
-    testMoveBoxRight() {
-        var force;
-        force = Matter.Vector.create(7, 0);
-        Matter.Body.translate(this.m_boxA, force);
+        var firstPlayer = this.m_firstPlayer;
+        this.addKeyboardCallback(Keyboard.LeftArrow, firstPlayer.moveLeft.bind(firstPlayer));
+        this.addKeyboardCallback(Keyboard.RightArrow, firstPlayer.moveRight.bind(firstPlayer));
     }
 }
 ;

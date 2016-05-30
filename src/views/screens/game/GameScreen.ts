@@ -1,6 +1,9 @@
 /// <reference path="../../../../typings/jquery/jquery.d.ts"/>
 /// <reference path="../../../../typings/matter/matter-js.d.ts"/>
 
+import PlayerModule = require('../../../models/Player');
+let Player = PlayerModule.Player ;
+
 import ScreenBase = require('../Screen');
 let Screen = ScreenBase.Screen ;
 
@@ -20,8 +23,11 @@ class GameScreen extends Screen {
     /** @brief  Matter.JS engine mainly used for physics simulation. */
     private m_engine: Matter.Engine ;
 
-    /** @brief  Box that is moved with keyboard. */
-    private m_boxA: Matter.Body ;
+    /** @brief  First Player. */
+    private m_firstPlayer: PlayerModule.Player ;
+
+    /** @brief  Second Player. */
+    private m_secondPlayer: PlayerModule.Player ;
 
     /**
      * @brief   Creation of the GameScreen.
@@ -45,15 +51,23 @@ class GameScreen extends Screen {
         // Create a Matter.js engine.
         this.m_engine = Engine.create(document.getElementById('GameScreen')) ;
 
-        // Create two boxes and a ground.
-        this.m_boxA = Bodies.rectangle(400, 540, 80, 80);
-        this.m_boxA.isStatic = true ;
-        var boxB = Bodies.rectangle(450, 50, 80, 80);
-        boxB.isStatic = true ;
+        // Create players.
+        const playersSize: Matter.Vector = Matter.Vector.create(60, 80) ;
+        const playersSpeed: number = 7 ;
+
+        var firstPlayerPos: Matter.Vector = Matter.Vector.create(300, 540) ;
+        this.m_firstPlayer = new Player(firstPlayerPos, playersSize, playersSpeed) ;
+        this.m_firstPlayer.registerToPhysicsEngine(this.m_engine.world) ;
+
+        var secondPlayerPos: Matter.Vector = Matter.Vector.create(600, 540) ;
+        this.m_secondPlayer = new Player(firstPlayerPos, playersSize, playersSpeed) ;
+        this.m_secondPlayer.registerToPhysicsEngine(this.m_engine.world) ;
+
+        // Create ground.
         var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
         // Add all of the bodies to the world.
-        World.add(this.m_engine.world, [this.m_boxA, boxB, ground]) ;
+        World.addBody(this.m_engine.world, ground) ;
 
         // Run the engine.
         Engine.run(this.m_engine) ;
@@ -63,28 +77,17 @@ class GameScreen extends Screen {
      * @brief   Set up controls (keyboard, mouse).
      */
     private setupControls() : void {
+        var firstPlayer: PlayerModule.Player = this.m_firstPlayer ;
+
         this.addKeyboardCallback(
                                  Keyboard.LeftArrow,
-                                 this.testMoveBoxLeft.bind(this)) ;
+                                 firstPlayer.moveLeft.bind(firstPlayer)
+                                ) ;
 
         this.addKeyboardCallback(
                                  Keyboard.RightArrow,
-                                 this.testMoveBoxRight.bind(this)) ;
-    }
-
-
-    /** @brief  Just a test. */
-    private testMoveBoxLeft() : void {
-        var force: Matter.Vector ;
-        force = Matter.Vector.create(-7, 0) ;
-        Matter.Body.translate(this.m_boxA, force) ;
-    }
-
-    /** @brief  Just a test. */
-    private testMoveBoxRight() : void {
-        var force: Matter.Vector ;
-        force = Matter.Vector.create(7, 0) ;
-        Matter.Body.translate(this.m_boxA, force) ;
+                                 firstPlayer.moveRight.bind(firstPlayer)
+                                ) ;
     }
 } ;
 
