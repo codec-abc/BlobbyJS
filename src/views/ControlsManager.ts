@@ -9,33 +9,70 @@ interface ControlCallback {
 
 export class ControlsManager {
     /** @brief  List of all avalaible keyboard controls with their callback. */
-    private m_keyboardCallbacks: ControlCallback ;
+    private m_keyboardCallbacks: ControlCallback = { } ;
 
     /** @brief  List of all avalaible mouse controls with their callback. */
-    private m_mouseCallbacks: ControlCallback ;
+    private m_mouseCallbacks: ControlCallback = { } ;
+
+    /** @brief  List of active keyboard controls (key pressed). */
+    private m_activeKeyboardControls: KeyboardControl[] = new Array() ;
+
+    /** @brief  List of active mouse controls (key pressed). */
+    private m_activeMouseControls: MouseControl[] = new Array() ;
 
     /**
      * @brief   Creation of a ControlsManager.
      */
     constructor() {
-        var self: ControlsManager = this ;
-        self.m_keyboardCallbacks = { }  ;
-        self.m_mouseCallbacks = { }  ;
+        this.setupKeyboard() ;
+        this.setupMouse() ;
 
-        // Keyboard (only keydown is supported at the moment).
+        setInterval(this.keyboardLoop.bind(this), 16) ;
+    }
+
+    /**
+     * @brief   Set up keyboard controls.
+     */
+    private setupKeyboard() : void {
+        var self: ControlsManager = this ;
+
+        // Only keydown is supported at the moment.
         $(window).keydown(function(e) {
             var controlCode: number = e.which ;
             var validControl: boolean ;
             validControl = ControlsManager.CheckValidKeyboardControl(controlCode) ;
 
             if (validControl) {
-                var controlCallback: () => void ;
-                controlCallback = self.m_keyboardCallbacks[controlCode] ;
-                if (controlCallback != undefined) {
-                    controlCallback() ;
+                var inArrayPos: number = self.m_activeKeyboardControls.indexOf(controlCode) ;
+                var controlCallback: () => void = self.m_keyboardCallbacks[controlCode] ;
+                var hasCallback: boolean = (controlCallback !== undefined) ;
+
+                // Insert value if not in array.
+                if (hasCallback && (inArrayPos < 0)) {
+                    self.m_activeKeyboardControls.push(controlCode) ;
                 }
             }
+
+            e.preventDefault() ;
         }) ;
+
+        // Remove the key from the pressed ones when it is released.
+        $(window).keyup(function(e) {
+            var controlCode: number = e.which ;
+            var inArrayPos: number = self.m_activeKeyboardControls.indexOf(controlCode) ;
+
+            if (inArrayPos > -1) {
+                // Erase the value.
+                self.m_activeKeyboardControls.splice(inArrayPos, 1) ;
+            }
+        }) ;
+    }
+
+    /**
+     * @brief   Set up mouse controls.
+     */
+    private setupMouse() : void {
+        var self: ControlsManager = this ;
 
         // Mouse buttons.
         $(window).mousedown(function(e) {
@@ -52,6 +89,23 @@ export class ControlsManager {
             }
         }) ;
     }
+
+    /**
+     * @brief   Loop to have smooth animations when using keyboard.
+     */
+    private keyboardLoop() : void {
+         var self: ControlsManager = this ;
+
+        this.m_activeKeyboardControls.forEach(
+            function(
+                     element: number,
+                     index: number,
+                     array: number[]
+                    ) {
+            self.m_keyboardCallbacks[element]() ;
+        }) ;
+    }
+
 
     /**
      * @brief   Add a keyboard control with its callback.
@@ -106,7 +160,8 @@ export class ControlsManager {
 export enum MouseControl {
     LeftButton,
     MiddleButton,
-    RightButton
+    RightButton,
+    AmountMouseControls
 } ;
 
 /** @brief  Represent keyboard key codes with more readable values. */
@@ -178,5 +233,6 @@ export enum KeyboardControl {
     Numpad_Add,
     Numpad_Sub,
     Numpad_Point,
-    Numpad_Divide
+    Numpad_Divide,
+    AmountKeyboardControls
 } ;

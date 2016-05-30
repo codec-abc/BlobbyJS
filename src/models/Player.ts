@@ -2,6 +2,11 @@
  * @brief   A PLayer is an entity that is controlled by the user.
  */
 export class Player {
+    /**
+     * @brief   Bounding box of the Player.
+     */
+    private m_aabb: Matter.Body ;
+
     /** @brief  Current score of the Player. */
     private m_score: number ;
 

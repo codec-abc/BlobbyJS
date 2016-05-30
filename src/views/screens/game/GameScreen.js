@@ -18,16 +18,27 @@ class GameScreen extends Screen {
     }
     setupPhysics() {
         this.m_engine = Engine.create(document.getElementById('GameScreen'));
-        var boxA = Bodies.rectangle(400, 200, 80, 80);
+        this.m_boxA = Bodies.rectangle(400, 540, 80, 80);
+        this.m_boxA.isStatic = true;
         var boxB = Bodies.rectangle(450, 50, 80, 80);
+        boxB.isStatic = true;
         var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-        World.add(this.m_engine.world, [boxA, boxB, ground]);
+        World.add(this.m_engine.world, [this.m_boxA, boxB, ground]);
         Engine.run(this.m_engine);
     }
     setupControls() {
-        this.addKeyboardCallback(Keyboard.Escape, function () {
-            alert('Hi, it is Echap key test!');
-        });
+        this.addKeyboardCallback(Keyboard.LeftArrow, this.testMoveBoxLeft.bind(this));
+        this.addKeyboardCallback(Keyboard.RightArrow, this.testMoveBoxRight.bind(this));
+    }
+    testMoveBoxLeft() {
+        var force;
+        force = Matter.Vector.create(-7, 0);
+        Matter.Body.translate(this.m_boxA, force);
+    }
+    testMoveBoxRight() {
+        var force;
+        force = Matter.Vector.create(7, 0);
+        Matter.Body.translate(this.m_boxA, force);
     }
 }
 ;

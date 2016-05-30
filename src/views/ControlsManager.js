@@ -2,21 +2,40 @@
 ;
 class ControlsManager {
     constructor() {
+        this.m_keyboardCallbacks = {};
+        this.m_mouseCallbacks = {};
+        this.m_activeKeyboardControls = new Array();
+        this.m_activeMouseControls = new Array();
+        this.setupKeyboard();
+        this.setupMouse();
+        setInterval(this.keyboardLoop.bind(this), 16);
+    }
+    setupKeyboard() {
         var self = this;
-        self.m_keyboardCallbacks = {};
-        self.m_mouseCallbacks = {};
         $(window).keydown(function (e) {
             var controlCode = e.which;
             var validControl;
             validControl = ControlsManager.CheckValidKeyboardControl(controlCode);
             if (validControl) {
-                var controlCallback;
-                controlCallback = self.m_keyboardCallbacks[controlCode];
-                if (controlCallback != undefined) {
-                    controlCallback();
+                var inArrayPos = self.m_activeKeyboardControls.indexOf(controlCode);
+                var controlCallback = self.m_keyboardCallbacks[controlCode];
+                var hasCallback = (controlCallback !== undefined);
+                if (hasCallback && (inArrayPos < 0)) {
+                    self.m_activeKeyboardControls.push(controlCode);
                 }
             }
+            e.preventDefault();
         });
+        $(window).keyup(function (e) {
+            var controlCode = e.which;
+            var inArrayPos = self.m_activeKeyboardControls.indexOf(controlCode);
+            if (inArrayPos > -1) {
+                self.m_activeKeyboardControls.splice(inArrayPos, 1);
+            }
+        });
+    }
+    setupMouse() {
+        var self = this;
         $(window).mousedown(function (e) {
             var controlCode = e.which;
             var validControl;
@@ -28,6 +47,12 @@ class ControlsManager {
                     controlCallback();
                 }
             }
+        });
+    }
+    keyboardLoop() {
+        var self = this;
+        this.m_activeKeyboardControls.forEach(function (element, index, array) {
+            self.m_keyboardCallbacks[element]();
         });
     }
     addKeyboardCallback(key, callback) {
@@ -49,6 +74,7 @@ exports.ControlsManager = ControlsManager;
     MouseControl[MouseControl["LeftButton"] = 0] = "LeftButton";
     MouseControl[MouseControl["MiddleButton"] = 1] = "MiddleButton";
     MouseControl[MouseControl["RightButton"] = 2] = "RightButton";
+    MouseControl[MouseControl["AmountMouseControls"] = 3] = "AmountMouseControls";
 })(exports.MouseControl || (exports.MouseControl = {}));
 var MouseControl = exports.MouseControl;
 ;
@@ -121,6 +147,7 @@ var MouseControl = exports.MouseControl;
     KeyboardControl[KeyboardControl["Numpad_Sub"] = 108] = "Numpad_Sub";
     KeyboardControl[KeyboardControl["Numpad_Point"] = 109] = "Numpad_Point";
     KeyboardControl[KeyboardControl["Numpad_Divide"] = 110] = "Numpad_Divide";
+    KeyboardControl[KeyboardControl["AmountKeyboardControls"] = 111] = "AmountKeyboardControls";
 })(exports.KeyboardControl || (exports.KeyboardControl = {}));
 var KeyboardControl = exports.KeyboardControl;
 ;
