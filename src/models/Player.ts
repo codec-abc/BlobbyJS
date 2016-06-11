@@ -2,9 +2,6 @@
  * @brief   A PLayer is an entity that is controlled by the user.
  */
 export class Player {
-    /** @brief  Bounding box of the Player. */
-    private m_aabb: Matter.Body ;
-
     /** @brief  Speed of the Player when moving. */
     private m_speed: number ;
 
@@ -22,17 +19,9 @@ export class Player {
      * @param   maxScore    Score to make Player win.
      */
     constructor(
-                position: Matter.Vector,
-                aabbSize: Matter.Vector,
                 speed?: number,
                 maxScore?: number
                ) {
-        this.m_aabb = Matter.Bodies.rectangle(
-                                              position.x, position.y,
-                                              aabbSize.x, aabbSize.y
-                                             ) ;
-        this.m_aabb.isStatic = true ;
-
         this.m_score = 0 ;
 
         var isValidMaxScore: boolean ;
@@ -48,16 +37,12 @@ export class Player {
      * @brief   Move Player on left.
      */
     public moveLeft() : void {
-        var force: Matter.Vector = Matter.Vector.create(-this.m_speed, 0) ;
-        Matter.Body.translate(this.m_aabb, force) ;
     }
 
     /**
      * @brief   Move Player on right.
      */
     public moveRight() : void {
-        var force: Matter.Vector = Matter.Vector.create(this.m_speed, 0) ;
-        Matter.Body.translate(this.m_aabb, force) ;
     }
 
     /**
@@ -75,14 +60,6 @@ export class Player {
     public score(points: number) : boolean {
         this.m_score += points ;
         return (this.m_score >= this.m_maxScore) ;
-    }
-
-    /**
-     * @brief   Register the Player to the world of physics engine.
-     * @param   world   World of physics engine.
-     */
-    public registerToPhysicsEngine(world: Matter.World) : void {
-        Matter.World.addBody(world, this.m_aabb) ;
     }
 
     /**
