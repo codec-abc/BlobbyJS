@@ -6,11 +6,6 @@ import Background = require('./GameBackground');
 import ResourcesModule = require('./GameResources') ;
 let Resources = ResourcesModule.GameResources ;
 
-// import ControlsManager = require('../../ControlsManager');
-// let Controls = ControlsManager.ControlsManager ;
-// let Keyboard = ControlsManager.KeyboardControl ;
-// let Mouse = ControlsManager.MouseControl ;
-
 export class GameScene extends PIXI.Container {
     /** @brief  Size of the scene. */
     private m_size: PIXI.Point ;
@@ -67,13 +62,14 @@ export class GameScene extends PIXI.Container {
      */
     private setPlayers() : void {
         var playerBaseline: number = $(window).innerHeight() - 32 ;
+        var playerBounds: number = $(window).innerWidth() / 4 ;
 
         // First player at the left position.
         var playerAPosX: number = (this.m_renderer.width * 0.25) ;
         var playerAPosition: PIXI.Point = new PIXI.Point(playerAPosX, playerBaseline) ;
 
         var playerAImage: string = Resources.ImagesFolder + '/FirstPlayer.png' ;
-        this.m_playerA = new PlayerModule.Player(playerAImage, playerAPosition) ;
+        this.m_playerA = new PlayerModule.Player(playerAImage, playerAPosition, playerBounds) ;
         this.addChild(this.m_playerA) ;
 
         // Second player at the right position.
@@ -81,7 +77,7 @@ export class GameScene extends PIXI.Container {
         var playerBPosition: PIXI.Point = new PIXI.Point(playerBPosX, playerBaseline) ;
 
         var playerBImage: string = Resources.ImagesFolder + '/SecondPlayer.png' ;
-        this.m_playerB = new PlayerModule.Player(playerBImage, playerBPosition) ;
+        this.m_playerB = new PlayerModule.Player(playerBImage, playerBPosition, playerBounds) ;
         this.addChild(this.m_playerB) ;
     }
 
@@ -93,20 +89,17 @@ export class GameScene extends PIXI.Container {
         this.m_renderer.render(this) ;
     }
 
-    // /**
-    //  * @brief   Set up controls (keyboard, mouse).
-    //  */
-    // private setupControls() : void {
-    //     var firstPlayer: PlayerModule.Player = this.m_firstPlayer ;
-    //
-    //     this.addKeyboardCallback(
-    //                              Keyboard.LeftArrow,
-    //                              firstPlayer.moveLeft.bind(firstPlayer)
-    //                             ) ;
-    //
-    //     this.addKeyboardCallback(
-    //                              Keyboard.RightArrow,
-    //                              firstPlayer.moveRight.bind(firstPlayer)
-    //                             ) ;
-    // }
+    /**
+     * @brief   Get the first player.
+     */
+    public get PlayerA() : PlayerModule.Player {
+        return this.m_playerA ;
+    }
+
+    /**
+     * @brief   Get the second player.
+     */
+    public get PlayerB() : PlayerModule.Player {
+        return this.m_playerB ;
+    }
 } ;

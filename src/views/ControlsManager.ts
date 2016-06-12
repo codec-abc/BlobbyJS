@@ -27,7 +27,8 @@ export class ControlsManager {
         this.setupKeyboard() ;
         this.setupMouse() ;
 
-        setInterval(this.keyboardLoop.bind(this), 16) ;
+        // setInterval(this.keyboardLoop.bind(this), 16) ;
+        requestAnimationFrame(this.keyboardLoop.bind(this)) ;
     }
 
     /**
@@ -94,8 +95,9 @@ export class ControlsManager {
      * @brief   Loop to have smooth animations when using keyboard.
      */
     private keyboardLoop() : void {
-         var self: ControlsManager = this ;
+        requestAnimationFrame(this.keyboardLoop.bind(this)) ;
 
+        var self: ControlsManager = this ;
         this.m_activeKeyboardControls.forEach(
             function(
                      element: number,

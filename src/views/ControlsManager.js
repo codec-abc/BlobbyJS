@@ -8,7 +8,7 @@ class ControlsManager {
         this.m_activeMouseControls = new Array();
         this.setupKeyboard();
         this.setupMouse();
-        setInterval(this.keyboardLoop.bind(this), 16);
+        requestAnimationFrame(this.keyboardLoop.bind(this));
     }
     setupKeyboard() {
         var self = this;
@@ -50,6 +50,7 @@ class ControlsManager {
         });
     }
     keyboardLoop() {
+        requestAnimationFrame(this.keyboardLoop.bind(this));
         var self = this;
         this.m_activeKeyboardControls.forEach(function (element, index, array) {
             self.m_keyboardCallbacks[element]();

@@ -50,8 +50,8 @@ class BlobbyVolley {
      *          application.
      */
     private static initializeMainWindow() : Electron.BrowserWindow {
-        const mainWindowWidth : number = 1280 ;
-        const mainWindowHeight : number = 768 ;
+        const mainWindowWidth : number = 1024 ;
+        const mainWindowHeight : number = 640 ;
 
         // Create the browser window.
         var mainWindow : Electron.BrowserWindow = new BrowserWindow({

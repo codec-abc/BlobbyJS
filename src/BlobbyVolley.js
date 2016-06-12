@@ -17,8 +17,8 @@ class BlobbyVolley {
         });
     }
     static initializeMainWindow() {
-        const mainWindowWidth = 1280;
-        const mainWindowHeight = 768;
+        const mainWindowWidth = 1024;
+        const mainWindowHeight = 640;
         var mainWindow = new BrowserWindow({
             width: mainWindowWidth,
             height: mainWindowHeight
