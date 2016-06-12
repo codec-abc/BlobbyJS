@@ -24,7 +24,7 @@ class BlobbyVolley {
             height: mainWindowHeight
         });
         mainWindow.loadURL(BlobbyVolley.SourcesDirectory + '/views/screens/menus/main/content.html');
-        mainWindow.webContents.openDevTools();
+        mainWindow.setResizable(false);
         mainWindow.on('closed', function () {
             mainWindow = null;
         });

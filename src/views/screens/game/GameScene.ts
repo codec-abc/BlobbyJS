@@ -1,38 +1,51 @@
 /// <reference path="../../../../typings/jquery/jquery.d.ts"/>
 /// <reference path="../../../../typings/pixi/pixi.js.d.ts"/>
 
+import PlayerModule = require('../../../models/players/Player');
 import Background = require('./GameBackground');
+import ResourcesModule = require('./GameResources') ;
+let Resources = ResourcesModule.GameResources ;
 
 // import ControlsManager = require('../../ControlsManager');
 // let Controls = ControlsManager.ControlsManager ;
 // let Keyboard = ControlsManager.KeyboardControl ;
 // let Mouse = ControlsManager.MouseControl ;
 
-export class GameScene {
-    /** @brief  Contains graphics elements. */
-    private m_scene: PIXI.Container ;
+export class GameScene extends PIXI.Container {
+    /** @brief  Size of the scene. */
+    private m_size: PIXI.Point ;
+
+    /** @brief  Renders the scene. */
+    private m_renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer ;
 
     /** @brief  Background of the scene. */
     private m_background: Background.GameBackground ;
 
-    /** @brief  Renders the scene. */
-    private m_renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer ;
+    /** @brief  First player. */
+    private m_playerA: PlayerModule.Player ;
+
+    /** @brief  Second player. */
+    private m_playerB: PlayerModule.Player ;
+
 
     /**
      * @brief   Create a new GameScene.
      */
     constructor() {
-        var parentContainer: JQuery = $('body') ;
+        super() ;
 
-        this.m_scene = new PIXI.Container() ;
-        this.m_renderer = PIXI.autoDetectRenderer(320, 240) ;
+        this.m_size = new PIXI.Point() ;
+        this.m_size.x = $(window).innerWidth() ;
+        this.m_size.y = $(window).innerHeight() ;
+
+        var parentContainer: JQuery = $('body') ;
+        this.m_renderer = PIXI.autoDetectRenderer(this.m_size.x, this.m_size.y) ;
 
         parentContainer.append(this.m_renderer.view) ;
-        this.animate() ;
-        this.setBackground() ;
+        requestAnimationFrame(this.animate.bind(this)) ;
 
-        var self : GameScene = this ;
-        $(window).on('resize', self.resize.bind(self)) ;
+        this.setBackground() ;
+        this.setPlayers() ;
     }
 
     /**
@@ -40,12 +53,36 @@ export class GameScene {
      */
     private setBackground() : void {
         this.m_renderer.backgroundColor = 0x0A9BFC ;
+        var backgroundSize: PIXI.Point = new PIXI.Point(
+                                                        this.m_size.x,
+                                                        this.m_size.y
+                                                       ) ;
 
-        this.m_background = new Background.GameBackground() ;
-        this.m_scene.addChild(this.m_background) ;
+        this.m_background = new Background.GameBackground(backgroundSize) ;
+        this.addChild(this.m_background) ;
+    }
 
-        var bgHeight: number = this.m_background.height ;
-        this.m_background.position.y = $(window).innerHeight() - bgHeight ;
+    /**
+     * @brief   Set the players in the scene.
+     */
+    private setPlayers() : void {
+        var playerBaseline: number = $(window).innerHeight() - 32 ;
+
+        // First player at the left position.
+        var playerAPosX: number = (this.m_renderer.width * 0.25) ;
+        var playerAPosition: PIXI.Point = new PIXI.Point(playerAPosX, playerBaseline) ;
+
+        var playerAImage: string = Resources.ImagesFolder + '/FirstPlayer.png' ;
+        this.m_playerA = new PlayerModule.Player(playerAImage, playerAPosition) ;
+        this.addChild(this.m_playerA) ;
+
+        // Second player at the right position.
+        var playerBPosX: number = (this.m_renderer.width * 0.75) ;
+        var playerBPosition: PIXI.Point = new PIXI.Point(playerBPosX, playerBaseline) ;
+
+        var playerBImage: string = Resources.ImagesFolder + '/SecondPlayer.png' ;
+        this.m_playerB = new PlayerModule.Player(playerBImage, playerBPosition) ;
+        this.addChild(this.m_playerB) ;
     }
 
     /**
@@ -53,17 +90,7 @@ export class GameScene {
      */
     private animate() : void {
         requestAnimationFrame(this.animate.bind(this)) ;
-        this.m_renderer.render(this.m_scene) ;
-    }
-
-    /**
-     * @brief   Resize the scene renderer.
-     */
-    private resize() : void {
-        var windowWidth: number = $(window).innerWidth() ;
-        var windowHeight: number = $(window).innerHeight() ;
-        this.m_renderer.resize(windowWidth, windowHeight) ;
-        this.m_background.updateOnResize(windowWidth, windowHeight) ;
+        this.m_renderer.render(this) ;
     }
 
     // /**

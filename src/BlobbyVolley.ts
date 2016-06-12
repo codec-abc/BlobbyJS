@@ -62,7 +62,10 @@ class BlobbyVolley {
         mainWindow.loadURL(BlobbyVolley.SourcesDirectory + '/views/screens/menus/main/content.html') ;
 
         // Open the DevTools.
-        mainWindow.webContents.openDevTools() ;
+        // mainWindow.webContents.openDevTools() ;
+
+        // Unable resizing.
+        mainWindow.setResizable(false) ;
 
         // Emitted when the window is closed.
         mainWindow.on('closed', function() {
