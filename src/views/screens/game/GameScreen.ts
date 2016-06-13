@@ -43,6 +43,11 @@ class GameScreen extends ScreenBase.Screen {
                                  firstPlayer.moveRight.bind(firstPlayer)
                                 ) ;
 
+        this.addKeyboardCallback(
+                                 Keyboard.UpArrow,
+                                 firstPlayer.jump.bind(firstPlayer)
+                                ) ;
+
 
         var secondPlayer: PlayerModule.Player = this.m_scene.PlayerB ;
         this.addKeyboardCallback(
@@ -53,6 +58,11 @@ class GameScreen extends ScreenBase.Screen {
         this.addKeyboardCallback(
                                  Keyboard.Key_F,
                                  secondPlayer.moveRight.bind(secondPlayer)
+                                ) ;
+
+        this.addKeyboardCallback(
+                                 Keyboard.Key_E,
+                                 secondPlayer.jump.bind(secondPlayer)
                                 ) ;
     }
 } ;

@@ -17,9 +17,11 @@ class GameScreen extends ScreenBase.Screen {
         var firstPlayer = this.m_scene.PlayerA;
         this.addKeyboardCallback(Keyboard.LeftArrow, firstPlayer.moveLeft.bind(firstPlayer));
         this.addKeyboardCallback(Keyboard.RightArrow, firstPlayer.moveRight.bind(firstPlayer));
+        this.addKeyboardCallback(Keyboard.UpArrow, firstPlayer.jump.bind(firstPlayer));
         var secondPlayer = this.m_scene.PlayerB;
         this.addKeyboardCallback(Keyboard.Key_S, secondPlayer.moveLeft.bind(secondPlayer));
         this.addKeyboardCallback(Keyboard.Key_F, secondPlayer.moveRight.bind(secondPlayer));
+        this.addKeyboardCallback(Keyboard.Key_E, secondPlayer.jump.bind(secondPlayer));
     }
 }
 ;

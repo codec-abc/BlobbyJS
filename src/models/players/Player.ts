@@ -1,4 +1,5 @@
 import BehaviorModule = require('./Behavior');
+import JumpModule = require('./Jump');
 
 /**
  * @brief   A Player is an entity that is controlled by the user.
@@ -6,6 +7,9 @@ import BehaviorModule = require('./Behavior');
 export class Player extends PIXI.Sprite {
     /** @brief  Behavior of the Player. */
     private m_behavior: BehaviorModule.Behavior ;
+
+    /** @brief  Handle the jump behavior of the player. */
+    private m_jump: JumpModule.Jump ;
 
     /**
      * @brief   Create a new Player.
@@ -49,6 +53,8 @@ export class Player extends PIXI.Sprite {
         this.position.x -= texture.width / 2 ;
         this.position.y -= texture.height ;
 
+        this.m_jump = new JumpModule.Jump(this.position) ;
+
         // UGLY...
         this.m_behavior.SpriteWidth = texture.width ;
     }
@@ -75,7 +81,7 @@ export class Player extends PIXI.Sprite {
      * @brief   Make player jump.
      */
     public jump() : void {
-        // @TODO
+        this.m_jump.trigger() ;
     }
 
     /**
