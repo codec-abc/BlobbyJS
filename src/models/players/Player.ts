@@ -43,7 +43,6 @@ export class Player extends PIXI.Sprite {
         else {
             spriteTexture.addListener('update', this.onTextureUpdated.bind(this)) ;
         }
-
     }
 
     /**

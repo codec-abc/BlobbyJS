@@ -2,11 +2,16 @@
 /// <reference path="../../../../typings/pixi/pixi.js.d.ts"/>
 
 import PlayerModule = require('../../../models/players/Player');
+import BallModule = require('../../../models/balls/Ball');
 import Background = require('./GameBackground');
 import ResourcesModule = require('./GameResources') ;
 let Resources = ResourcesModule.GameResources ;
 
 export class GameScene extends PIXI.Container {
+    /** @brief  Baseline of players and ball from the bottom of viewport. */
+    private static get Offset() : number { return 32 ; }
+
+
     /** @brief  Size of the scene. */
     private m_size: PIXI.Point ;
 
@@ -16,11 +21,15 @@ export class GameScene extends PIXI.Container {
     /** @brief  Background of the scene. */
     private m_background: Background.GameBackground ;
 
+
     /** @brief  First player. */
     private m_playerA: PlayerModule.Player ;
 
     /** @brief  Second player. */
     private m_playerB: PlayerModule.Player ;
+
+    /** @brief  Ball that players try to send to their respective opponent. */
+    private m_ball: BallModule.Ball ;
 
 
     /**
@@ -36,11 +45,12 @@ export class GameScene extends PIXI.Container {
         var parentContainer: JQuery = $('body') ;
         this.m_renderer = PIXI.autoDetectRenderer(this.m_size.x, this.m_size.y) ;
 
-        parentContainer.append(this.m_renderer.view) ;
-        requestAnimationFrame(this.animate.bind(this)) ;
-
         this.setBackground() ;
         this.setPlayers() ;
+        this.setBall() ;
+
+        parentContainer.append(this.m_renderer.view) ;
+        requestAnimationFrame(this.animate.bind(this)) ;
     }
 
     /**
@@ -61,7 +71,7 @@ export class GameScene extends PIXI.Container {
      * @brief   Set the players in the scene.
      */
     private setPlayers() : void {
-        var playerBaseline: number = $(window).innerHeight() - 32 ;
+        var playerBaseline: number = $(window).innerHeight() - GameScene.Offset ;
         var playerBounds: number = $(window).innerWidth() / 4 ;
 
         // First player at the left position.
@@ -82,10 +92,41 @@ export class GameScene extends PIXI.Container {
     }
 
     /**
+     * @brief   Set the ball in the scene.
+     */
+    private setBall() : void {
+        var playerBaseline: number = $(window).innerHeight() - GameScene.Offset ;
+        var ballBounds: number = $(window).innerWidth() ;
+        var ballImage: string = Resources.ImagesFolder + '/Ball.png' ;
+
+        this.m_ball = new BallModule.Ball(
+                                          ballImage,
+                                          new PIXI.Point(ballBounds, playerBaseline)
+                                         ) ;
+
+        // Set the ball position.
+        const PowerRand: number = 1000 ;
+        var rand: number = (Math.random() * PowerRand) ;
+        if (rand > (PowerRand / 2)) {
+            // Put ball above Player A to start match.
+            this.m_ball.position.x = this.m_playerA.position.x ;
+        }
+        else {
+            // Put ball above Player B to start match.
+            this.m_ball.position.x = this.m_playerB.position.x ;
+        }
+
+        this.m_ball.position.y = GameScene.Offset * 3 ;
+
+        this.addChild(this.m_ball) ;
+    }
+
+    /**
      * @brief   Update the animation of the scene.
      */
     private animate() : void {
         requestAnimationFrame(this.animate.bind(this)) ;
+        this.m_ball.update() ;
         this.m_renderer.render(this) ;
     }
 
