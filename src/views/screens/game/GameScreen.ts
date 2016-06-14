@@ -25,6 +25,14 @@ class GameScreen extends ScreenBase.Screen {
      */
     protected setup() : void {
         this.m_scene = new GameSceneModule.GameScene() ;
+
+        addEventListener(
+                         GameSceneModule.GameScene.SceneLoadedEvent,
+                         this.onSceneLoaded.bind(this)
+                        ) ;
+    }
+
+    private onSceneLoaded() : void {
         this.setupControls() ;
     }
 

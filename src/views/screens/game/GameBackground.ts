@@ -5,6 +5,11 @@ let Resources = ResourcesModule.GameResources ;
  * @brief   Class to manage the background of the game screen.
  */
 export class GameBackground extends PIXI.Container {
+    /** @brief  Event sent when the background is loaded. */
+    public static get BackgroundLoadedEvent() : string {
+        return 'BackgroundLoaded' ;
+    }
+
     /** @brief  Path to the ground texture. */
     private static get GroundTexturePath() : string {
         return Resources.ImagesFolder + '/bg/sand.png'
@@ -22,29 +27,17 @@ export class GameBackground extends PIXI.Container {
     private m_viewportSize: PIXI.Point ;
 
     /**
+     * @brief   Sprite of the net that can have interactions with the ball and
+     *          players.
+     */
+    private m_net: PIXI.Sprite ;
+
+    /**
      * @brief   Create a new GameBackground.
      */
     constructor(viewportSize: PIXI.Point) {
         super() ;
         this.m_viewportSize = viewportSize ;
-
-        // TODO: When several images for background will have to be loaded:
-        // var assetsToLoad = [ "stone.png"];
-        // // create a new loader
-        // loader = new PIXI.AssetLoader(assetsToLoad);
-        // // use callback
-        // loader.onComplete = onAssetsLoaded
-        // //begin load
-        // loader.load();
-        //
-        // function onAssetsLoaded()
-        // {
-        //       var texture = PIXI.Texture.fromImage("stone.png");
-        //       var sprite  = new PIXI.Sprite(texture);
-        //       // this will log the correct width and height as the image was preloaded into the pixi.js cache
-        //       console.log(stone.width + ', ' + stone.height);
-        // }
-        const images: string = Resources.ImagesFolder ;
 
         var bgAssetsLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader() ;
         bgAssetsLoader.add('Ground', GameBackground.GroundTexturePath) ;
@@ -59,6 +52,8 @@ export class GameBackground extends PIXI.Container {
     private onAssetsLoaded() : void {
         this.setGround() ;
         this.setNet() ;
+
+        dispatchEvent(new Event(GameBackground.BackgroundLoadedEvent)) ;
     }
 
     /**
@@ -76,9 +71,16 @@ export class GameBackground extends PIXI.Container {
      */
     private setNet() : void {
         var texture: PIXI.Texture = PIXI.Texture.fromImage(GameBackground.NetTexturePath) ;
-        var sprite: PIXI.Sprite = new PIXI.Sprite(texture) ;
-        this.addChild(sprite) ;
-        sprite.position.x = (this.m_viewportSize.x - texture.baseTexture.width) / 2 ;
-        sprite.position.y = this.m_viewportSize.y - texture.baseTexture.height - 12 ;
+        this.m_net = new PIXI.Sprite(texture) ;
+        this.addChild(this.m_net) ;
+        this.m_net.position.x = (this.m_viewportSize.x - texture.baseTexture.width) / 2 ;
+        this.m_net.position.y = this.m_viewportSize.y - texture.baseTexture.height - 12 ;
+    }
+
+    /**
+     * @brief   Get bounds of the net.
+     */
+    public get NetBounds() : PIXI.Rectangle {
+        return this.m_net.getBounds() ;
     }
 } ;

@@ -8,8 +8,15 @@ import ResourcesModule = require('./GameResources') ;
 let Resources = ResourcesModule.GameResources ;
 
 export class GameScene extends PIXI.Container {
+    /** @brief  Event sent when the scene is loaded. */
+    public static get SceneLoadedEvent() : string {
+        return 'SceneLoaded' ;
+    }
+
     /** @brief  Baseline of players and ball from the bottom of viewport. */
-    private static get Offset() : number { return 32 ; }
+    private static get Offset() : number {
+        return 32 ;
+    }
 
 
     /** @brief  Size of the scene. */
@@ -41,16 +48,34 @@ export class GameScene extends PIXI.Container {
         this.m_size = new PIXI.Point() ;
         this.m_size.x = $(window).innerWidth() ;
         this.m_size.y = $(window).innerHeight() ;
-
-        var parentContainer: JQuery = $('body') ;
         this.m_renderer = PIXI.autoDetectRenderer(this.m_size.x, this.m_size.y) ;
 
         this.setBackground() ;
+
+        // Background contains important elements for players and ball bounds
+        // definition.
+        // As background is asynchonously loaded, an event is required here.
+        addEventListener(
+                         Background.GameBackground.BackgroundLoadedEvent,
+                         this.onBackgroundLoaded.bind(this)
+                        ) ;
+    }
+
+    /**
+     * @brief   Continue stting up the scene once the background is loaded.
+     * @param   e   Event that is sent by the background.
+     */
+    private onBackgroundLoaded(e: Event) : void {
+        e.stopPropagation() ;
+
         this.setPlayers() ;
         this.setBall() ;
 
+        var parentContainer: JQuery = $('body') ;
         parentContainer.append(this.m_renderer.view) ;
         requestAnimationFrame(this.animate.bind(this)) ;
+
+        dispatchEvent(new Event(GameScene.SceneLoadedEvent)) ;
     }
 
     /**
@@ -72,7 +97,7 @@ export class GameScene extends PIXI.Container {
      */
     private setPlayers() : void {
         var playerBaseline: number = $(window).innerHeight() - GameScene.Offset ;
-        var playerBounds: number = $(window).innerWidth() / 4 ;
+        var playerBounds: number = ($(window).innerWidth() / 4) - this.m_background.NetBounds.width / 2  ;
 
         // First player at the left position.
         var playerAPosX: number = (this.m_renderer.width * 0.25) ;
