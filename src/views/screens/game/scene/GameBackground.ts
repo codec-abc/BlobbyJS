@@ -1,4 +1,7 @@
-import ResourcesModule = require('./GameResources') ;
+import ElementDataModule = require('../../../../models/utils/ElementData');
+let ElementData = ElementDataModule.ElementData ;
+
+import ResourcesModule = require('../GameResources') ;
 let Resources = ResourcesModule.GameResources ;
 
 /**
@@ -31,6 +34,9 @@ export class GameBackground extends PIXI.Container {
      *          players.
      */
     private m_net: PIXI.Sprite ;
+
+    /** @brief  Some data on the net element. */
+    private m_netData: ElementDataModule.ElementData ;
 
     /**
      * @brief   Create a new GameBackground.
@@ -75,12 +81,18 @@ export class GameBackground extends PIXI.Container {
         this.addChild(this.m_net) ;
         this.m_net.position.x = (this.m_viewportSize.x - texture.baseTexture.width) / 2 ;
         this.m_net.position.y = this.m_viewportSize.y - texture.baseTexture.height - 12 ;
+
+        this.m_netData = new ElementData(
+                                         this.m_net.position,
+                                         this.m_net.width,
+                                         this.m_net.height
+                                        ) ;
     }
 
     /**
-     * @brief   Get bounds of the net.
+     * @brief   Get data on the net shape.
      */
-    public get NetBounds() : PIXI.Rectangle {
-        return this.m_net.getBounds() ;
+    public get NetData() : ElementDataModule.ElementData {
+        return this.m_netData ;
     }
 } ;

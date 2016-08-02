@@ -1,10 +1,12 @@
-/** @brief  Make the player jump. */
+/**
+ * @brief   Make the player jump.
+ */
 export class Jump {
     /** @brief  Initial jump force when a jump is started. */
-    private static get InitialJumpForce() : number { return -12 ; }
+    private static get InitialJumpForce() : number { return -14 ; }
 
     /** @brief  Decrease of the jump force. */
-    private static get JumpForceDecrease() : number { return 0.5 ; }
+    private static get JumpForceDecrease() : number { return 0.7 ; }
 
     /** @brief  Maximum amount of jumps that can be made at the same time. */
     private static get MaxJumps() : number { return 2 ; }
@@ -31,6 +33,7 @@ export class Jump {
         this.m_position = position ;
         this.m_onGroundPosition = position.y ;
         this.m_amountJumps = 0 ;
+        this.m_jumpForce = 0 ;
 
         // Used to enable the first jump.
         this.m_framesSinceLastJump = Jump.AmountFrameBeforeJump ;
@@ -64,7 +67,13 @@ export class Jump {
         else {
             this.m_position.y = this.m_onGroundPosition ;
             this.m_amountJumps = 0 ;
+            this.m_jumpForce = 0 ;
             this.m_framesSinceLastJump = Jump.AmountFrameBeforeJump ;
         }
+    }
+
+    /** @brief  Get the force applied on Player for juming. */
+    public get Force() : number {
+        return this.m_jumpForce ;
     }
 } ;
