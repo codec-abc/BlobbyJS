@@ -40,10 +40,12 @@ export class GameBackground extends PIXI.Container {
 
     /**
      * @brief   Create a new GameBackground.
+     * @param   width   Width of the scene.
+     * @param   height  Height of the scene.
      */
-    constructor(viewportSize: PIXI.Point) {
+    constructor(width: number, height: number) {
         super() ;
-        this.m_viewportSize = viewportSize ;
+        this.m_viewportSize = new PIXI.Point(width, height) ;
 
         var bgAssetsLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader() ;
         bgAssetsLoader.add('Ground', GameBackground.GroundTexturePath) ;

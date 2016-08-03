@@ -2,6 +2,7 @@
 
 import SceneDataModule = require('./SceneData');
 import GameForegroundModule = require('./GameForeground');
+import GameBackgroundModule = require('./GameBackground');
 
 export class GameSceneLoader {
     /** @brief  Event sent when the scene is loaded. */
@@ -15,11 +16,18 @@ export class GameSceneLoader {
     /** @brief  Foreground of the scene (players, ball, etc). */
     private m_foreground: GameForegroundModule.GameForeground ;
 
+    /** @brief  Flag to know if background is loaded. */
+    private m_isLoadedBackground: boolean = false ;
+
+    /** @brief  Background of the scene (players, ball, etc). */
+    private m_background: GameBackgroundModule.GameBackground ;
+
     /**
      * @brief   Create the GameSceneLoader.
      * @param   sceneData   Data required to generate the scene.
      */
     constructor(sceneData: SceneDataModule.SceneData) {
+        this.loadBackground(sceneData) ;
         this.loadForeground(sceneData) ;
     }
 
@@ -42,10 +50,28 @@ export class GameSceneLoader {
     }
 
     /**
+     * @brief   Load the background.
+     * @param   sceneData   Data required to generate the scene.
+     */
+    private loadBackground(sceneData: SceneDataModule.SceneData): void {
+        this.m_background = new GameBackgroundModule.GameBackground(sceneData.Width, sceneData.Height) ;
+        const BackgroundLoaded: string = GameBackgroundModule.GameBackground.BackgroundLoadedEvent ;
+        addEventListener(BackgroundLoaded, this.onLoadedBackground.bind(this)) ;
+    }
+
+    /**
+     * @brief   Trigger operations once foreground is fully loaded.
+     */
+    private onLoadedBackground(): void {
+        this.m_isLoadedBackground = true ;
+        this.notifyIfSceneLoaded() ;
+    }
+
+    /**
      * @brief   Notify listeners that the scene has been fully loaded.
      * */
     private notifyIfSceneLoaded(): void {
-        if (this.m_isLoadedForeground) {
+        if (this.m_isLoadedForeground && this.m_isLoadedBackground) {
             // Notify the scene is loaded.
             dispatchEvent(new Event(GameSceneLoader.SceneLoadedEvent)) ;
         }
@@ -54,5 +80,10 @@ export class GameSceneLoader {
     /** @brief  Foreground of the scene. */
     public get Foreground(): GameForegroundModule.GameForeground {
         return this.m_foreground ;
+    }
+
+    /** @brief  Background of the scene. */
+    public get Background(): GameBackgroundModule.GameBackground {
+        return this.m_background ;
     }
 } ;
