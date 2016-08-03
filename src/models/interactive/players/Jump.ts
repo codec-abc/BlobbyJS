@@ -2,6 +2,9 @@
  * @brief   Make the player jump.
  */
 export class Jump {
+    /** @brief  Event for jumping player update position. */
+    public static get JumpPlayerUpdateEvent(): string { return 'JumpPlayer' ; }
+
     /** @brief  Initial jump force when a jump is started. */
     private static get InitialJumpForce() : number { return -14 ; }
 
@@ -47,8 +50,6 @@ export class Jump {
             this.m_amountJumps++ ;
             this.m_framesSinceLastJump = 0 ;
 
-            console.log(this.m_framesSinceLastJump) ;
-
             if (this.m_amountJumps == 1) {
                 requestAnimationFrame(this.updateJump.bind(this)) ;
             }
@@ -59,6 +60,7 @@ export class Jump {
     private updateJump() : void {
         this.m_position.y += this.m_jumpForce ;
         this.m_jumpForce += Jump.JumpForceDecrease ;
+        dispatchEvent(new Event(Jump.JumpPlayerUpdateEvent)) ;
 
         if (this.m_position.y < this.m_onGroundPosition) {
             this.m_framesSinceLastJump++ ;

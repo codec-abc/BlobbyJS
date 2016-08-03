@@ -32,7 +32,7 @@ export class Player {
                ) {
         this.m_scoring = new ScoringModule.Scoring(maxScore) ;
         this.m_behavior = new BehaviorModule.Behavior(position, speedFactor) ;
-        this.m_jump = new JumpModule.Jump(position) ;
+        this.m_jump = new JumpModule.Jump(this.m_behavior.CurrentPosition) ;
     }
 
     /**

@@ -1,5 +1,7 @@
 import PlayerViewModule = require('../views/screens/game/interactive/PlayerView') ;
 import PlayerModelModule = require('../models/interactive/players/Player') ;
+import JumpPlayerModelModule = require('../models/interactive/players/Jump') ;
+import BehaviorPlayerModelModule = require('../models/interactive/players/Behavior') ;
 
 /**
  * @brief   Data to set up a Player.
@@ -72,6 +74,16 @@ export class PlayerController {
     constructor(data: PlayerSetupData) {
         this.setModel(data) ;
         this.setTexture(data) ;
+
+        addEventListener(
+                         BehaviorPlayerModelModule.Behavior.MovePlayerUpdateEvent,
+                         this.updateView.bind(this)
+                        ) ;
+
+        addEventListener(
+                         JumpPlayerModelModule.Jump.JumpPlayerUpdateEvent,
+                         this.updateView.bind(this)
+                        ) ;
     }
 
     /**
@@ -84,14 +96,6 @@ export class PlayerController {
                                                     data.SpeedFactor,
                                                     data.MaxScore
                                                    ) ;
-    }
-
-    /**
-     * @brief   Get the view of the Player.
-     * @return  View of the Player.
-     */
-    public get View(): PlayerViewModule.PlayerView {
-        return this.m_view ;
     }
 
     /**
@@ -109,12 +113,18 @@ export class PlayerController {
     }
 
     /**
+     * @brief   Update the view to fit model data.
+     */
+    private updateView(): void {
+        this.m_view.moveAt(this.m_model.Behavior.CurrentPosition) ;
+    }
+
+    /**
      * @brief   Update the Player.
      */
     public update(): void {
         if (this.m_model != undefined) {
             this.m_model.Behavior.update() ;
-            this.m_view.moveAt(this.m_model.Behavior.CurrentPosition) ;
         }
     }
 
@@ -124,7 +134,6 @@ export class PlayerController {
     public moveLeft(): void {
         if (this.m_model != undefined) {
             this.m_model.Behavior.moveLeft() ;
-            this.m_view.moveAt(this.m_model.Behavior.CurrentPosition) ;
         }
     }
 
@@ -134,7 +143,6 @@ export class PlayerController {
     public moveRight(): void {
         if (this.m_model != undefined) {
             this.m_model.Behavior.moveRight() ;
-            this.m_view.moveAt(this.m_model.Behavior.CurrentPosition) ;
         }
     }
 
@@ -144,7 +152,14 @@ export class PlayerController {
     public jump(): void {
         if (this.m_model != undefined) {
             this.m_model.jump() ;
-            this.m_view.moveAt(this.m_model.Behavior.CurrentPosition) ;
         }
+    }
+
+    /**
+     * @brief   Get the view of the Player.
+     * @return  View of the Player.
+     */
+    public get View(): PlayerViewModule.PlayerView {
+        return this.m_view ;
     }
 }

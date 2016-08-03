@@ -2,6 +2,9 @@
  * @brief   Behavior of a Player.
  */
 export class Behavior {
+    /** @brief  Event for moving player update position. */
+    public static get MovePlayerUpdateEvent(): string { return 'MovePlayer' ; }
+
     /** @brief  Default speed to make Player move. */
     public static get DefaultSpeed() : number { return 8 ; }
 
@@ -57,6 +60,8 @@ export class Behavior {
     public update() : void {
         this.m_currentPosition.x += this.m_moveForce ;
         this.m_moveForce = 0 ;
+
+        dispatchEvent(new Event(Behavior.MovePlayerUpdateEvent)) ;
     }
 
     /**
