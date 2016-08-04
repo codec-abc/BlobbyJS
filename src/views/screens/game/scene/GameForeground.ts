@@ -56,7 +56,8 @@ export class GameForeground extends PIXI.Container
             playerData.Area = new PIXI.Rectangle(0, 0, halfSceneWidth, positionXStep) ;
             playerData.Texture = PIXI.Texture.fromImage(texturePlayer) ;
             this.m_leftPlayer = new PlayerControllerModule.PlayerController(playerData) ;
-            this.addChild(this.m_leftPlayer.View.Sprite) ;
+            this.addChild(this.m_leftPlayer.View.PlayerShadowSprite) ;
+            this.addChild(this.m_leftPlayer.View.PlayerSprite) ;
         }
 
         // Set up the right player.
@@ -70,7 +71,8 @@ export class GameForeground extends PIXI.Container
             playerData.Area = new PIXI.Rectangle(halfSceneWidth, 0, halfSceneWidth, positionXStep) ;
             playerData.Texture = PIXI.Texture.fromImage(texturePlayer) ;
             this.m_rightPlayer = new PlayerControllerModule.PlayerController(playerData) ;
-            this.addChild(this.m_rightPlayer.View.Sprite) ;
+            this.addChild(this.m_rightPlayer.View.PlayerShadowSprite) ;
+            this.addChild(this.m_rightPlayer.View.PlayerSprite) ;
         }
 
         // Notify the foreground is loaded and ready to be updated/rendered.

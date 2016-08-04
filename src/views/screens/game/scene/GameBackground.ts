@@ -15,7 +15,7 @@ export class GameBackground extends PIXI.Container {
 
     /** @brief  Path to the ground texture. */
     private static get GroundTexturePath() : string {
-        return Resources.ImagesFolder + '/bg/sand.png'
+        return Resources.ImagesFolder + '/bg/bg.png'
     } ;
 
     /** @brief  Path to the net texture. */
@@ -82,7 +82,7 @@ export class GameBackground extends PIXI.Container {
         this.m_net = new PIXI.Sprite(texture) ;
         this.addChild(this.m_net) ;
         this.m_net.position.x = (this.m_viewportSize.x - texture.baseTexture.width) / 2 ;
-        this.m_net.position.y = this.m_viewportSize.y - texture.baseTexture.height - 12 ;
+        this.m_net.position.y = this.m_viewportSize.y - texture.baseTexture.height - 20 ;
 
         this.m_netData = new ElementData(
                                          this.m_net.position,
