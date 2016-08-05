@@ -3,13 +3,37 @@
   <head>
     <meta charset="UTF-8">
         <!-- JQuery -->
-        <script>window.$ = window.jQuery = require('../../../../lib/jquery/jquery.min.js') ;</script>
-        <script src="../../../../lib/jquery/jquery-ui/jquery-ui.min.js" charset="utf-8"></script>
-        <!-- PIXI -->
-        <script src="../../../../lib/pixi/pixi.min.js" charset="utf-8"></script>
-        <!-- Sources -->
-        <script src="../../../models/utils/Rectangle.js" charset="utf-8"></script>
-        <script src="GameScreen.js" charset="utf-8"></script>
+        <script type="text/javascript">
+        if (window && window.process && window.process.type)
+        {
+            document.write(unescape("%3Cscript%3E window.$ = window.jQuery = require('../../../../lib/jquery/jquery.min.js'); %3C%2Fscript%3E"));
+            document.write(unescape('%3Cscript src="../../../../lib/jquery/jquery-ui/jquery-ui.min.js" charset="utf-8" %3E %3C%2Fscript%3E'));
+            document.write(unescape('%3Cscript src="../../../../lib/pixi/pixi.js" charset="utf-8" %3E %3C%2Fscript%3E'));
+            document.write(unescape('%3Cscript src="GameScreen.js" charset="utf-8"%3E%3C%2Fscript%3E'));
+            
+        }
+        else
+        {
+            document.write(unescape('%3Cscript src="../../../../lib/require/require.js" charset="utf-8" %3E %3C%2Fscript%3E'));
+            setTimeout(function()
+            {
+                require(['../../../../lib/jquery/jquery.min.js'], function (PIXI) 
+                {
+                    require(['../../../../lib/jquery/jquery-ui/jquery-ui.min.js'], function (PIXI) 
+                    {
+                        require(['../../../../lib/pixi/pixi.js'], function (PIXI) 
+                        {
+                            window.PIXI = PIXI;
+                            require(['GameScreen'], function (GameScreen) 
+                            {
+                            });
+                        });
+                    });
+                });
+             }, 100);
+
+        }
+        </script>     
 
         <!-- STYLES -->
         <link rel="stylesheet" href="game.css"/>
