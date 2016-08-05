@@ -1,0 +1,10 @@
+machine:
+  node:
+    version: 6.1.0
+test:
+    pre:
+        - less src/views/screens/game/game.less src/views/screens/game/game.css
+    override:
+        - less src/views/screens/game/game.less src/views/screens/game/game.css
+        - bash compileElectron.sh
+        - bash compileWeb.sh
