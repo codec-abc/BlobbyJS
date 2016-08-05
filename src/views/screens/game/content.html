@@ -10,28 +10,26 @@
             document.write(unescape('%3Cscript src="../../../../lib/jquery/jquery-ui/jquery-ui.min.js" charset="utf-8" %3E %3C%2Fscript%3E'));
             document.write(unescape('%3Cscript src="../../../../lib/pixi/pixi.js" charset="utf-8" %3E %3C%2Fscript%3E'));
             document.write(unescape('%3Cscript src="GameScreen.js" charset="utf-8"%3E%3C%2Fscript%3E'));
-            
         }
         else
         {
-            document.write(unescape('%3Cscript src="../../../../lib/require/require.js" charset="utf-8" %3E %3C%2Fscript%3E'));
-            setTimeout(function()
+            var deps = 
+            [
+                '../../../../lib/jquery/jquery.min.js', 
+                '../../../../lib/jquery/jquery-ui/jquery-ui.min.js', 
+                '../../../../lib/pixi/pixi.js', 
+                'GameScreen'
+            ];
+            var s = document.createElement('script');
+            s.onload = function() 
             {
-                require(['../../../../lib/jquery/jquery.min.js'], function (PIXI) 
+                require(deps, function (jquery, jqueryUI, PIXI, GameScreen) 
                 {
-                    require(['../../../../lib/jquery/jquery-ui/jquery-ui.min.js'], function (PIXI) 
-                    {
-                        require(['../../../../lib/pixi/pixi.js'], function (PIXI) 
-                        {
-                            window.PIXI = PIXI;
-                            require(['GameScreen'], function (GameScreen) 
-                            {
-                            });
-                        });
-                    });
+                    window.PIXI = PIXI;
                 });
-             }, 100);
-
+            }
+            s.src = "../../../../lib/require/require.js";
+            document.getElementsByTagName('head')[0].appendChild(s);
         }
         </script>     
 
