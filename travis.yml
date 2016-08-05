@@ -1,0 +1,10 @@
+before_install:
+- sudo apt-get update -qq
+- sudo apt-get install -qq npm
+install:
+- npm install typescript
+- npm install less
+- less src/views/screens/game/game.less src/views/screens/game/game.css
+script:
+- ./compileElectron.sh
+- ./compileWeb.sh
