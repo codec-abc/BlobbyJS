@@ -6,5 +6,5 @@ install:
 - npm install less
 - less src/views/screens/game/game.less src/views/screens/game/game.css
 script:
-- ./compileElectron.sh
-- ./compileWeb.sh
+- bash compileElectron.sh
+- bash compileWeb.sh
