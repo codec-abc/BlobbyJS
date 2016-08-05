@@ -12,6 +12,7 @@
         "rewriteTsconfig": true
     },
     "exclude": [
-        "typings"
+        "typings",
+        "node_modules"
     ]
 }
