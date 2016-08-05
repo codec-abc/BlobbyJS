@@ -1,10 +1,12 @@
 language: node_js
-sudo: false
-node_js: 6
+sudo: required
+node_js: 
+    - "6"
+    - "6.1"
 install:
-- npm install typescript
-- npm install less
-- less src/views/screens/game/game.less src/views/screens/game/game.css
+    - npm install typescript
+    - npm install less
+    - less src/views/screens/game/game.less src/views/screens/game/game.css
 script:
-- bash compileElectron.sh
-- bash compileWeb.sh
+    - bash compileElectron.sh
+    - bash compileWeb.sh
