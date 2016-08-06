@@ -55,7 +55,7 @@ gulp.task('copyElectronPackageFile', function (callback)
 
 gulp.task('openInElectron', function()
 {
-    return run('electron .').exec();
+    return run('electron ./build').exec();
 });
 
 gulp.task('runWebServer', function()
