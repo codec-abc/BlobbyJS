@@ -7,10 +7,8 @@ Clone of Blobby Volley using ElectronJS
 
 ## Build
 
-`
+```
 npm install
-
 npm install --global gulp-cli
-
 gulp runElectron (or gulp runWeb)
-`
+```
