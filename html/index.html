@@ -2,9 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-        <script type="text/javascript" src='./lib/require/require.js'></script>
-        <script type="text/javascript" src='./lib/jquery/jquery.min.js'></script>
-
+        
         <script type="text/javascript">
             if (window && window.process && window.process.type)
             {
@@ -13,7 +11,13 @@
                 delete window.exports;
                 delete window.module;
             }
-            $(document).ready(function() 
+        </script>
+
+        <script type="text/javascript" src='./lib/require/require.js'></script>
+        <script type="text/javascript" src='./lib/jquery/jquery.min.js'></script>
+        
+        <script>
+         $(document).ready(function() 
             {
                 var deps = 
                 [
@@ -31,6 +35,7 @@
             }) ;
 
         </script>
+
 
         <!-- STYLES -->
         <link rel="stylesheet" href="./css/all.css"/>
