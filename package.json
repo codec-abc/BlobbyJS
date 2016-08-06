@@ -1,11 +1,10 @@
 {
   "name": "blobby-volley",
   "version": "0.1.0",
-  "main": "build/BlobbyVolley.js",
   "description": "Clone of Blobby Volley using ElectronJS",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "gulp"
+    "start": "gulp runElectron"
   },
   "repository": {
     "type": "git",
