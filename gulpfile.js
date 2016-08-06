@@ -3,7 +3,6 @@ var less = require('gulp-less');
 var path = require('path');
 var ts = require('gulp-typescript');
 var runSequence = require('run-sequence');
-var electron = require('gulp-electron');
 var run = require('gulp-run');
 
 gulp.task('default', function(callback)
