@@ -3,7 +3,7 @@ machine:
     version: 6.1.0
 test:
     pre:
-        - lessc src/views/screens/game/game.less src/views/screens/game/game.css
+        - npm install
+        - npm install --global gulp-cli
     override:
-        - tsc --module commonjs
-        - tsc --module amd
+        - gulp

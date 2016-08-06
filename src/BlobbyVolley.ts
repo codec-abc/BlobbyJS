@@ -59,10 +59,10 @@ class BlobbyVolley {
                                                                      height: mainWindowHeight
                                                                     }) ;
         // Load the main.html of the app.
-        mainWindow.loadURL(BlobbyVolley.SourcesDirectory + '/views/screens/menus/main/content.html') ;
+        mainWindow.loadURL(BlobbyVolley.SourcesDirectory + '/index.html') ;
 
         // Open the DevTools.
-        // mainWindow.webContents.openDevTools() ;
+        mainWindow.webContents.openDevTools() ;
 
         // Unable resizing.
         mainWindow.setResizable(false) ;

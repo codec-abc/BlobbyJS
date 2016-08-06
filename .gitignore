@@ -3,3 +3,4 @@ src/**/*.js
 src/**/*.css
 lib
 node_modules/
+build/

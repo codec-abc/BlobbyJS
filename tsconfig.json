@@ -1,11 +1,8 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "commonjs",
-        "moduleResolution": "classic",
-        "declaration": false,
-        "removeComments": true,
-        "noLib": false
+        "module" : "amd",
+        "outDir": "build/"
     },
     "atom": {
         "rewriteTsconfig": true
