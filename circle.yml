@@ -6,4 +6,4 @@ test:
         - npm install
         - npm install --global gulp-cli
     override:
-        - gulp
+        - gulp build

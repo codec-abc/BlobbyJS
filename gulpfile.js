@@ -4,69 +4,71 @@ var path = require('path');
 var ts = require('gulp-typescript');
 var runSequence = require('run-sequence');
 var run = require('gulp-run');
+var webserver = require('gulp-webserver');
 
-gulp.task('default', function(callback)
+gulp.task('build', function(callback)
 {
-    runSequence('less','copyHtml','copyLib','copyResources','compileForElectron', 'copyElectronPackageFile', callback);
+    runSequence('less','copyHtml','copyLib','copyResources','compile', 'copyElectronPackageFile', callback);
 });
 
-gulp.task('buildAndRun', function(callback)
+gulp.task('runElectron', function(callback)
 {
-    runSequence('default','openInElectron', callback);
+    runSequence('build','openInElectron', callback);
 });
 
-gulp.task('web', function(callback)
+gulp.task('runWeb', function(callback)
 {
-    runSequence('less','typescriptWeb', callback);
+    runSequence('build','runWebServer', callback);
 });
 
 gulp.task('less', function () 
 {
-    gulp.src('css/all.less')
-    .pipe(less())
-    .pipe(gulp.dest('build/css'));
+    return gulp.src('css/all.less').pipe(less()).pipe(gulp.dest('build/css'));
 });
 
-gulp.task('compileForElectron', function () 
+gulp.task('compile', function () 
 {
     var tsProject = ts.createProject('tsconfig.json');
     var tsResult = tsProject.src().pipe(ts(tsProject));
-    tsResult.pipe(gulp.dest('build/'));
-});
-
-gulp.task('compileForWeb', function () 
-{
-    var tsProject = ts.createProject('tsconfig.json', {module : "amd"});
-    var tsResult = tsProject.src().pipe(ts(tsProject));
-    tsResult.pipe(gulp.dest('build/'));
+    return tsResult.pipe(gulp.dest('build/'));
 });
 
 gulp.task('copyHtml', function () 
 {
-    gulp.src('html/*.html')
-    .pipe(gulp.dest('build/'));
+    return gulp.src('html/*.html').pipe(gulp.dest('build/'));;
 });
 
 gulp.task('copyResources', function () 
 {
-    gulp.src('resources/**')
-    .pipe(gulp.dest('build/resources'));
+    return gulp.src('resources/**').pipe(gulp.dest('build/resources'));
 });
 
-gulp.task('copyLib', function () 
+gulp.task('copyLib', function (callback) 
 {
-    gulp.src('lib/**')
-    .pipe(gulp.dest('build/lib'));
+    return gulp.src('lib/**').pipe(gulp.dest('build/lib'));
 });
 
-gulp.task('copyElectronPackageFile', function () 
+gulp.task('copyElectronPackageFile', function (callback) 
 {
-    gulp.src('electronPackage/**')
-    .pipe(gulp.dest('build'));
+    return gulp.src('electronPackage/**').pipe(gulp.dest('build'));
 });
 
 gulp.task('openInElectron', function()
 {
     return run('electron .').exec();
+});
+
+gulp.task('runWebServer', function()
+{
+    gulp.src('./build')
+    .pipe(webserver(
+    {
+      directoryListing: 
+      {
+          enable: true,
+          path: './build/index.html'
+      },
+      open: true
+    }));
 });
 

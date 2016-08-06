@@ -1,7 +1,7 @@
 export class GameResources {
     /** @brief  Path to resources. */
     public static get ResourcesFolder() {
-        return '../../../../resources' ;
+        return './resources' ;
     } ;
 
     /** @brief  Path to image resources. */
