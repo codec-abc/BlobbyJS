@@ -170,10 +170,10 @@ export class Ball extends PIXI.Sprite {
                 if (!this.m_isOnGround)
                 {
                     if (this.position.x < (this.m_bounds.x / 2)) {
-                        playerB.Behavior.score(1) ;
+//                        playerB.Behavior.score(1) ;
                     }
                     else {
-                        playerA.Behavior.score(1) ;
+//                        playerA.Behavior.score(1) ;
                     }
 
                     setTimeout(() => {
@@ -242,7 +242,7 @@ export class Ball extends PIXI.Sprite {
      */
     private applyForceFromPlayer(player: PlayerModule.Player) : boolean {
         var isPhysicsBall: boolean = (this.m_bottomCenter != undefined) && (!this.m_isOnGround) ;
-
+/*
         if (isPhysicsBall) {
             var ballXCenter: number = this.position.x ;
             var ballYCenter: number = this.position.y + (this.m_bottomCenter.y / 2) ;
@@ -260,7 +260,7 @@ export class Ball extends PIXI.Sprite {
                 return true ;
             }
         }
-
+*/
         return false ;
     }
 
@@ -271,6 +271,7 @@ export class Ball extends PIXI.Sprite {
      */
     private putOutsidePlayer(player: PlayerModule.Player) : SideCollide {
         // Get points of the Ball bounds that are inside the player bounds.
+        /*
         var points: PIXI.Point[] = this.getCollidingOfPointBallIntoPlayer(player) ;
 
         if (points.length == 1) {
@@ -347,6 +348,8 @@ export class Ball extends PIXI.Sprite {
                 }
             }
         }
+        */
+        return SideCollide.Bottom ;
     }
 
     /**
@@ -365,6 +368,7 @@ export class Ball extends PIXI.Sprite {
                                        ] ;
 
         var collidingPoints: PIXI.Point[] = new Array() ;
+        /*
         collidingPoints.forEach(
                                 function(
                                          point: PIXI.Point,
@@ -375,6 +379,7 @@ export class Ball extends PIXI.Sprite {
                 collidingPoints.push(point) ;
             }
         }) ;
+        */
         return collidingPoints ;
     }
 
