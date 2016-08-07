@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-        
+    <meta charset="UTF-8">  
         <script type="text/javascript">
+            window.nodeModules = {};
+            window.isRunningInElectron = (window && window.process && window.process.type) ? true : false;
             if (window && window.process && window.process.type)
             {
-                window.nodeRequire = require;
+                // export different module here
+                //window.nodeModules.fs = require('fs');
+                window.nodeModules.nodeRequire = require;
+
                 delete window.require;
                 delete window.exports;
                 delete window.module;
@@ -27,9 +31,9 @@
                 require(deps, function (jqueryUI, PIXI) 
                 {
                     window.PIXI = PIXI;
-                    require(["./views/screens/game/GameScreen.js"], function (GameScreen) 
+                    require(["./Main.js"], function (Main) 
                     {
-                        var gameScreen = new GameScreen.GameScreen() ;
+                        Main.Main.start(window.isRunningInElectron, window.nodeModules);
                     });
                 });
             }) ;
