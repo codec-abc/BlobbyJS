@@ -10,7 +10,7 @@ Clone of Blobby Volley using ElectronJS
 ```bash
 npm install
 npm install --global gulp-cli
-# Then you can do gulp build to just build
-# or gulp runElectron to build and open 
-gulp runElectron (or gulp runWeb)
+gulp runElectron
+# or gulp build to just build
+# or gulp runWeb to open it in the browser 
 ```
