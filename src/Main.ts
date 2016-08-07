@@ -1,7 +1,7 @@
 /// <reference path="../typings/node/node.d.ts"/>
 
 import GameScreen = require('./views/screens/game/GameScreen');
-import * as fileSystem from "fs";
+//import * as fileSystem from "fs";
 
 export module Main
 {
@@ -11,7 +11,7 @@ export module Main
         if(isRunningInElectron)
         {
             // could be using node module here is they were registered in the nodeModules object.
-            
+
             /*
             let fs : typeof fileSystem  = nodeModules.fs;
             fs.writeFile("test.txt", "Hey there!", function(err) 
