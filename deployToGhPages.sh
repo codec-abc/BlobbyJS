@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Automated deploy script with Circle CI.
-
 # Exit if any subcommand fails.
 set -e
 
