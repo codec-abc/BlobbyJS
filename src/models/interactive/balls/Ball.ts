@@ -1,4 +1,4 @@
-import PhysicsModule = require('./Physics');
+import PhysicsModule = require('./BallPhysics');
 
 export class Ball {
     /** @brief  Manage physics of the Ball. */
