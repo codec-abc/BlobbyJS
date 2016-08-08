@@ -85,10 +85,4 @@ class GameScreen extends ScreenBase.Screen {
     }
 } ;
 
-/**
- * @brief   JQuery main function.
- */
-$(document).ready(function() {
-    var screen : GameScreen ;
-    screen = new GameScreen() ;
-}) ;
+export {GameScreen};

@@ -1,0 +1,9 @@
+machine:
+  node:
+    version: 6.1.0
+test:
+    pre:
+        - npm install
+        - npm install --global gulp-cli
+    override:
+        - gulp build
