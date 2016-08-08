@@ -34,10 +34,10 @@ export class BallSetupData {
 /**
  * @brief   Controller of a Ball.
  */
-export class PlayerController {
+export class BallController {
     /** @brief  View of the Ball. */
     private m_view: BallViewModule.BallView ;
 
     /** @brief  Model of the Ball. */
-    private m_model: PlayerModelModule.Player ;
+    // private m_model: PlayerModelModule.Player ;
 }
