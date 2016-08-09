@@ -3,6 +3,8 @@
 # BlobbyJS
 Clone of Blobby Volley using ElectronJS
 
+[Live version!](https://dcarlus.github.io/BlobbyJS/index.html)
+
 ## Build and run
 
 ```bash
