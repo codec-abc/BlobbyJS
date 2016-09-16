@@ -1,6 +1,8 @@
 import SceneDataModule = require('./SceneData');
 import PlayerViewModule = require('../interactive/PlayerView');
 import PlayerControllerModule = require('../../../../controllers/PlayerController');
+import BallViewModule = require('../interactive/BallView');
+import BallControllerModule = require('../../../../controllers/BallController');
 import IUpdatableModule = require('../../../interfaces/IUpdatable');
 
 export class GameForeground extends PIXI.Container
@@ -20,6 +22,9 @@ export class GameForeground extends PIXI.Container
     /** @brief  Player on the right side of the screen. */
     private m_rightPlayer: PlayerControllerModule.PlayerController ;
 
+    /** @brief  Volley ball. */
+    private m_ball: BallControllerModule.BallController ;
+
     /**
      * @brief   Create a new instance of GameForeground.
      */
@@ -33,6 +38,12 @@ export class GameForeground extends PIXI.Container
                          PlayerViewModule.PlayerView.PlayersLoadedEvent,
                          this.onLoadedPlayers.bind(this)
                         ) ;
+
+        BallViewModule.BallView.PreloadSprites() ;
+        addEventListener(
+                         BallViewModule.BallView.BallLoadedEvent,
+                         this.onLoadedBall.bind(this)
+                        ) ;
     }
 
     /**
@@ -40,21 +51,21 @@ export class GameForeground extends PIXI.Container
      *          loaded.
      */
     private onLoadedPlayers() : void {
-        const sceneWidth: number = this.m_sceneData.Width ;
-        const halfSceneWidth: number = sceneWidth / 2 ;
-        const positionXStep: number = halfSceneWidth / 2 ;
-        const positionY: number = this.m_sceneData.Height - SceneDataModule.SceneData.PlayersOffset ;
+        const SceneWidth: number = this.m_sceneData.Width ;
+        const HalfSceneWidth: number = SceneWidth / 2 ;
+        const PositionXStep: number = HalfSceneWidth / 2 ;
+        const PositionY: number = this.m_sceneData.Height - SceneDataModule.SceneData.PlayersOffset ;
 
         // Set up the left player.
         {
-            const texturePlayer = PlayerViewModule.PlayerView.LeftPlayerPath ;
+            const TexturePlayer: string = PlayerViewModule.PlayerView.LeftPlayerPath ;
 
             let playerData: PlayerControllerModule.PlayerSetupData ;
             playerData = GameForeground.PlayerData ;
 
-            playerData.Position = new PIXI.Point(positionXStep, positionY) ;
-            playerData.Area = new PIXI.Rectangle(0, 0, halfSceneWidth, positionXStep) ;
-            playerData.Texture = PIXI.Texture.fromImage(texturePlayer) ;
+            playerData.Position = new PIXI.Point(PositionXStep, PositionY) ;
+            playerData.Area = new PIXI.Rectangle(0, 0, HalfSceneWidth, PositionXStep) ;
+            playerData.Texture = PIXI.Texture.fromImage(TexturePlayer) ;
             this.m_leftPlayer = new PlayerControllerModule.PlayerController(playerData) ;
             this.addChild(this.m_leftPlayer.View.PlayerShadowSprite) ;
             this.addChild(this.m_leftPlayer.View.PlayerSprite) ;
@@ -62,14 +73,14 @@ export class GameForeground extends PIXI.Container
 
         // Set up the right player.
         {
-            const texturePlayer = PlayerViewModule.PlayerView.RightPlayerPath ;
+            const TexturePlayer = PlayerViewModule.PlayerView.RightPlayerPath ;
 
             let playerData: PlayerControllerModule.PlayerSetupData ;
             playerData = GameForeground.PlayerData ;
 
-            playerData.Position = new PIXI.Point(positionXStep * 3, positionY) ;
-            playerData.Area = new PIXI.Rectangle(halfSceneWidth, 0, halfSceneWidth, positionXStep) ;
-            playerData.Texture = PIXI.Texture.fromImage(texturePlayer) ;
+            playerData.Position = new PIXI.Point(PositionXStep * 3, PositionY) ;
+            playerData.Area = new PIXI.Rectangle(HalfSceneWidth, 0, HalfSceneWidth, PositionXStep) ;
+            playerData.Texture = PIXI.Texture.fromImage(TexturePlayer) ;
             this.m_rightPlayer = new PlayerControllerModule.PlayerController(playerData) ;
             this.addChild(this.m_rightPlayer.View.PlayerShadowSprite) ;
             this.addChild(this.m_rightPlayer.View.PlayerSprite) ;
@@ -92,6 +103,27 @@ export class GameForeground extends PIXI.Container
     }
 
     /**
+    * @brief   Creation of the Ball when its data are loaded.
+    */
+    private onLoadedBall() : void {
+        const PositionY: number = this.m_sceneData.Height - SceneDataModule.SceneData.PlayersOffset ;
+        const BallPosition: PIXI.Point = new PIXI.Point(250, 120) ;
+        const BallTexture: string = BallViewModule.BallView.BallPath ;
+
+        let ballData: BallControllerModule.BallSetupData ;
+        ballData = new BallControllerModule.BallSetupData() ;
+        ballData.Position = BallPosition ;
+        ballData.SpeedFactor = 5 ;
+        ballData.Area = new PIXI.Rectangle(
+                                           0, 0,
+                                           this.m_sceneData.Width, PositionY
+                                          ) ;
+
+        this.m_ball = new BallControllerModule.BallController(ballData) ;
+        this.addChild(this.m_ball.View.BallSprite) ;
+    }
+
+    /**
      * @brief   Get the left player.
      */
     public get LeftPlayer(): PlayerControllerModule.PlayerController {
@@ -111,6 +143,6 @@ export class GameForeground extends PIXI.Container
     public update(): void {
         this.m_leftPlayer.update() ;
         this.m_rightPlayer.update() ;
-        //@TODO: Update ball too.
+        this.m_ball.update() ;
     }
 } ;

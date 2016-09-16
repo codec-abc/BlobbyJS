@@ -4,6 +4,9 @@ import RigidBodyModule = require('../../physics/RigidBody');
  * @brief   Class to handle the physics of the Ball.
  */
 export class BallPhysics extends RigidBodyModule.RigidBody {
+    /** @brief  Weight of the Ball. */
+    private static get Weigth(): number { return 0.27 ; }
+
     /** @brief  Decrease of the force on Y axis. */
     private static get ForceDecrease(): number { return 0.5 ; }
 
@@ -26,20 +29,15 @@ export class BallPhysics extends RigidBodyModule.RigidBody {
     private static get Restitution(): number { return 0.76 ; }
 
 
-    /** @brief  Make the ball be updated. */
-    private m_startUpdate: boolean ;
+    /**
+     * @brief  Create a new Ball physics instance.
+     * @param   position    Initial position of the object.
+     * @param   area        Area in which the object can move.
+     */
+    constructor(position: PIXI.Point, area: PIXI.Rectangle) {
+        super(area, BallPhysics.Weigth, BallPhysics.Restitution) ;
+        this.OpenHeight = true ;
 
-    /** @brief  Detect if the ball is on ground. */
-    private m_isOnGround: boolean ;
-
-
-    /** @brief  Create a new Ball physics instance. */
-    constructor(
-                aabb: PIXI.Rectangle,
-                area: PIXI.Rectangle
-               ) {
-        super(aabb, area) ;
-        this.m_startUpdate = false ;
-        this.m_isOnGround = false ;
+        this.setPosition(position) ;
     }
 } ;

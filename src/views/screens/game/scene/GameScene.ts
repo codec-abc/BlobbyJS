@@ -6,7 +6,10 @@ import SceneLoaderModule = require('./SceneLoader');
 import GameForegroundModule = require('./GameForeground');
 import ResourcesModule = require('../GameResources') ;
 import PlayerControllerModule = require('../../../../controllers/PlayerController');
+import PhysicsEngineModule = require('../../../../models/physics/PhysicsEngine');
+
 let Resources = ResourcesModule.GameResources ;
+let PhysicsEngine = PhysicsEngineModule.PhysicsEngine ;
 
 /**
  * @brief   Scene of the game stage.
@@ -21,6 +24,9 @@ export class GameScene extends PIXI.Container {
     /** @brief  Renders the scene. */
     private m_renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer ;
 
+    /** @brief  The physics engine to update all physics objects. */
+    private m_physicsEngine: PhysicsEngineModule.PhysicsEngine ;
+
     /**
      * @brief   Create a new GameScene.
      */
@@ -29,6 +35,7 @@ export class GameScene extends PIXI.Container {
 
         var width: number = $(window).innerWidth() ;
         var height: number =  $(window).innerHeight() ;
+        this.m_physicsEngine = new PhysicsEngineModule.PhysicsEngine() ;
         this.m_sceneData = new SceneDataModule.SceneData(width, height) ;
         this.m_sceneLoader = new SceneLoaderModule.GameSceneLoader(this.m_sceneData) ;
         addEventListener(
@@ -55,6 +62,8 @@ export class GameScene extends PIXI.Container {
      * @brief   Update the animation of the scene.
      */
     private animate(): void {
+        this.m_physicsEngine.update() ;
+
         this.m_sceneLoader.Foreground.update() ;
         this.m_renderer.render(this) ;
         requestAnimationFrame(this.animate.bind(this)) ;
