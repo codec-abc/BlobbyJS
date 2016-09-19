@@ -110,6 +110,11 @@ export class PlayerController {
                                                      ) ;
         data.Area.width -= data.Texture.width ;
         this.m_model.Behavior.setBounds(data.Area) ;
+        this.m_model.Behavior.AABB = new PIXI.Rectangle(
+                                                        0, 0,
+                                                        data.Texture.width,
+                                                        data.Texture.height
+                                                       ) ;
     }
 
     /**

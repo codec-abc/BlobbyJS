@@ -1,24 +1,24 @@
+import KinematicBodyModule = require('../../physics/KinematicBody');
+
 /**
  * @brief   Behavior of a Player.
  */
-export class Behavior {
+export class Behavior extends KinematicBodyModule.KinematicBody {
     /** @brief  Event for moving player update position. */
     public static get MovePlayerUpdateEvent(): string { return 'MovePlayer' ; }
 
     /** @brief  Default speed to make Player move. */
     public static get DefaultSpeed() : number { return 8 ; }
 
+
     /** @brief  Initial position of the Player. */
     private m_initialPosition: PIXI.Point ;
-
-    /** @brief  Current position of the Player. */
-    private m_currentPosition: PIXI.Point ;
 
     /** @brief  Force resulting of player moves. */
     private m_moveForce: number ;
 
     /** @brief  Speed of the Player when moving. */
-    private m_speed: number ;
+    private m_speedFactor: number ;
 
     /** @brief  Minimal coordinate on X axis the player can reach. */
     private m_minBound: number ;
@@ -34,13 +34,14 @@ export class Behavior {
      */
     constructor(
                 position: PIXI.Point,
+                area: PIXI.Rectangle,
                 speedFactor: number
                ) {
+        super(new PIXI.Point(position.x, position.y)) ;
         this.m_moveForce = 0 ;
         this.m_initialPosition = new PIXI.Point(position.x, position.y) ;
-        this.m_currentPosition = new PIXI.Point(position.x, position.y) ;
 
-        this.m_speed = Behavior.DefaultSpeed * speedFactor ;
+        this.m_speedFactor = Behavior.DefaultSpeed * speedFactor ;
     }
 
     /**
@@ -58,7 +59,7 @@ export class Behavior {
      * @brief   Update the Player behavior.
      */
     public update() : void {
-        this.m_currentPosition.x += this.m_moveForce ;
+        this.CurrentPosition.x += this.m_moveForce ;
         this.m_moveForce = 0 ;
 
         dispatchEvent(new Event(Behavior.MovePlayerUpdateEvent)) ;
@@ -68,8 +69,8 @@ export class Behavior {
      * @brief   Move Player on left.
      */
     public moveLeft() : void {
-        if (this.m_currentPosition.x > this.MinBound) {
-            this.m_moveForce = -this.Speed ;
+        if (this.CurrentPosition.x > this.MinBound) {
+            this.m_moveForce = -this.SpeedFactor ;
         }
         else {
             this.m_moveForce = 0 ;
@@ -80,8 +81,8 @@ export class Behavior {
      * @brief   Move Player on right.
      */
     public moveRight() : void {
-        if (this.m_currentPosition.x < this.MaxBound) {
-            this.m_moveForce = this.Speed ;
+        if (this.CurrentPosition.x < this.MaxBound) {
+            this.m_moveForce = this.SpeedFactor ;
         }
         else {
             this.m_moveForce = 0 ;
@@ -92,15 +93,8 @@ export class Behavior {
      * @brief   Reset the position of the Player.
      */
     public resetPosition() : void {
-        this.m_currentPosition.x = this.m_initialPosition.x ;
-        this.m_currentPosition.y = this.m_initialPosition.y ;
-    }
-
-    /**
-     * @brief   Get the current position of the Player.
-     */
-    public get CurrentPosition(): PIXI.Point {
-        return this.m_currentPosition ;
+        this.CurrentPosition.x = this.m_initialPosition.x ;
+        this.CurrentPosition.y = this.m_initialPosition.y ;
     }
 
     /**
@@ -120,15 +114,15 @@ export class Behavior {
     /**
      * @brief   Get the speed of the player.
      */
-    public get Speed() : number {
-        return this.m_speed ;
+    public get SpeedFactor() : number {
+        return this.m_speedFactor ;
     }
 
     /**
      * @brief   Set the speed of the player.
      */
-    public set Speed(speed: number) {
-        this.m_speed = speed ;
+    public set SpeedFactor(speedFactor: number) {
+        this.m_speedFactor = speedFactor ;
     }
 
     /**

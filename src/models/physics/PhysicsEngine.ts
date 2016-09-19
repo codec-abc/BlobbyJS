@@ -41,19 +41,31 @@ export class PhysicsEngine {
      */
     public update(): void {
         for (var rigid of this.m_rigidBodies) {
+            var rigidPosition: PIXI.Point = rigid.Position ;
+            var rigidAABB: PIXI.Rectangle = rigid.AABB ;
+            var rigidAbsoluteAABB = rigidAABB.clone() ;
+            rigidAbsoluteAABB.x += rigidPosition.x ;
+            rigidAbsoluteAABB.y += rigidPosition.y ;
+
+            for (var obstacle of this.m_obstacles) {
+                var kinematicAbsoluteAABB = obstacle.AABB.clone() ;
+                kinematicAbsoluteAABB.x += obstacle.CurrentPosition.x ;
+                kinematicAbsoluteAABB.y += obstacle.CurrentPosition.y ;
+
+                if (rigidAbsoluteAABB.contains(kinematicAbsoluteAABB.x + kinematicAbsoluteAABB.width, kinematicAbsoluteAABB.y)) {
+                    console.log("CONTACT");
+                    return ;
+                }
+            }
+
             if (rigid.IsSleeping) {
                 continue ;
             }
 
-            // for (var obstacle in this.m_obstacles) {
             var area: PIXI.Rectangle = rigid.Area ;
-            var aabb: PIXI.Rectangle = rigid.AABB ;
-            var position: PIXI.Point = rigid.Position ;
-
             var momentForce: number = (this.m_gravity * rigid.Weigth) / 10 ;
             rigid.Force.y += momentForce ;
             rigid.updatePositionOnY(rigid.Position.y + rigid.Force.y) ;
-            // }
         }
     }
 

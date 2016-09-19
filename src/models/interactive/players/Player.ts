@@ -19,8 +19,6 @@ export class Player {
      * @brief   Create a new Player.
      * @param   texture     Path to the image of the Player.
      * @param   position    Position of the Player when created.
-     * @param   bounds      Amount of pixel on left and right in which the player
-     *                      can move.
      * @param   speed       Speed of the Player when moving.
      * @param   maxScore    Score to make Player win.
      */
@@ -31,8 +29,10 @@ export class Player {
                 maxScore: number
                ) {
         this.m_scoring = new ScoringModule.Scoring(maxScore) ;
-        this.m_behavior = new BehaviorModule.Behavior(position, speedFactor) ;
+        this.m_behavior = new BehaviorModule.Behavior(position, area, speedFactor) ;
         this.m_jump = new JumpModule.Jump(this.m_behavior.CurrentPosition) ;
+
+        this.m_behavior.add() ;
     }
 
     /**
@@ -54,5 +54,10 @@ export class Player {
      */
     public get Behavior() : BehaviorModule.Behavior {
         return this.m_behavior ;
+    }
+
+    /** @brief  Set the AABB of the Ball. */
+    public set AABB(aabb: PIXI.Rectangle) {
+        this.m_behavior.AABB = aabb ;
     }
 } ;
