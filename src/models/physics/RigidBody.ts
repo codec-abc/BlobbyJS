@@ -19,6 +19,9 @@ export abstract class RigidBody {
     /** @brief  Force applied to the RigidBody on X and Y axis.*/
     private m_force: PIXI.Point ;
 
+    /** @brief  TRUE if the RigidBody is falling, FALSE otherwise. */
+    private m_isFalling: boolean ;
+
     /** @brief  Weigth of the RigidBody. */
     private m_weight: number ;
 
@@ -180,5 +183,15 @@ export abstract class RigidBody {
     /** @brief  If TRUE, the RigidBody is on ground. */
     public get IsOnGround(): boolean {
         return this.m_isOnGround ;
+    }
+
+    /** @brief  TRUE if the RigidBody is falling, FALSE otherwise. */
+    public get IsFalling(): boolean {
+        return this.m_isFalling ;
+    }
+
+    /** @brief  TRUE if the RigidBody is falling, FALSE otherwise. */
+    public set IsFalling(falling: boolean) {
+        this.m_isFalling = falling ;
     }
 } ;
