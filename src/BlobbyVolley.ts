@@ -28,8 +28,7 @@ class BlobbyVolley {
         // and is ready to create browser windows.
         app.on('ready', function () {
             // Initialize main window.
-            var mainWindow;
-            mainWindow = BlobbyVolley.initializeMainWindow();
+            var mainWindow = BlobbyVolley.initializeMainWindow();
         });
     }
     /**
