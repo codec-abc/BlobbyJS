@@ -25,6 +25,6 @@
     "gulp-webserver": "^0.9.1",
     "less": "^2.7.1",
     "run-sequence": "^1.2.2",
-    "typescript": "^1.8.10"
+    "typescript": "^2.0.3"
   }
 }
