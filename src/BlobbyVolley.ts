@@ -28,8 +28,7 @@ class BlobbyVolley {
         // and is ready to create browser windows.
         app.on('ready', function () {
             // Initialize main window.
-            var mainWindow;
-            mainWindow = BlobbyVolley.initializeMainWindow();
+            var mainWindow = BlobbyVolley.initializeMainWindow();
         });
     }
     /**
@@ -40,7 +39,7 @@ class BlobbyVolley {
         const mainWindowWidth = 1024;
         const mainWindowHeight = 640;
         // Create the browser window.
-        var mainWindow = new BrowserWindow({
+        var mainWindow : Electron.BrowserWindow | null = new BrowserWindow({
             width: mainWindowWidth,
             height: mainWindowHeight
         });

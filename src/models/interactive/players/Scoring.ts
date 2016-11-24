@@ -18,12 +18,16 @@ export class Scoring {
      * @brief   Create a new instance of Scoring.
      * @param   maxPoints   Score to make Player win.
      */
-    constructor(maxPoints?: number) {
+    constructor(maxPoints: number | null) {
         this.m_points = 0 ;
-
-        var areValidMaxPoints: boolean ;
-        areValidMaxPoints = ((maxPoints != undefined) && (maxPoints > 0)) ;
-        this.m_maxPoints = areValidMaxPoints ? maxPoints : Scoring.DefaultMaxPoints ;
+        if (maxPoints != null)
+        {
+            this.m_maxPoints = maxPoints!;
+        }
+        else
+        {
+            this.m_maxPoints = Scoring.DefaultMaxPoints ;
+        }
     }
 
     /**
