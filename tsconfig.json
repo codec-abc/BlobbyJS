@@ -1,7 +1,9 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "noImplicitAny": true,
+        "noImplicitThis" : true,
+        "noImplicitReturns" : true,
+        "noImplicitAny" : true,
         "strictNullChecks" : true,
         "module" : "amd",
         "outDir": "build/"
