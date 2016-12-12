@@ -1,17 +1,20 @@
 {
-    "compilerOptions": {
+    "compilerOptions": 
+    {
         "target": "es6",
         "noImplicitThis" : true,
         "noImplicitReturns" : true,
         "noImplicitAny" : true,
         "strictNullChecks" : true,
-        "module" : "amd",
+        "module": "amd",
         "outDir": "build/"
     },
-    "atom": {
+    "atom": 
+    {
         "rewriteTsconfig": true
     },
-    "exclude": [
+    "exclude": 
+    [
         "typings",
         "node_modules"
     ]
