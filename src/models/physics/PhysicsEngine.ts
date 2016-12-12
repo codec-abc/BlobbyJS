@@ -143,14 +143,19 @@ export class PhysicsEngine {
                             ): boolean {
         // Force of X axis.
         var ratioX: number = Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
-        rigid.Force.x = ratioX + obstacle.SpeedX ;
+        rigid.Force.x = (ratioX * 5) + obstacle.SpeedX ;
 
         if (Math.abs(rigid.Force.x) < PhysicsEngine.NullForceThreshold) {
             rigid.Force.x = 0 ;
         }
 
         // Force of Y axis.
-        rigid.Force.y = (20 * -obstacle.SpeedY) - (rigid.Force.y * rigid.Restitution) ;
+        if (Math.abs(obstacle.SpeedY) > PhysicsEngine.NullForceThreshold) {
+            rigid.Force.y = -Math.abs(obstacle.SpeedY) ;
+        }
+        else {
+            rigid.Force.y = -rigid.Force.y * rigid.Restitution ;
+        }
 
         if (Math.abs(rigid.Force.y) < PhysicsEngine.NullForceThreshold) {
             rigid.Force.y = 0 ;
@@ -185,10 +190,10 @@ export class PhysicsEngine {
         if (rigid.IsFalling) {
             var momentForce: number = (this.m_gravity * rigid.Weigth) / 10 ;
             rigid.Force.y += momentForce ;
-            rigid.updatePositionOnY(rigid.Position.y + rigid.Force.y) ;
-
-            rigid.updatePositionOnX(rigid.Position.x + rigid.Force.x) ;
         }
+
+        rigid.updatePositionOnY(rigid.Position.y + rigid.Force.y) ;
+        rigid.updatePositionOnX(rigid.Position.x + rigid.Force.x) ;
     }
 
     /**
