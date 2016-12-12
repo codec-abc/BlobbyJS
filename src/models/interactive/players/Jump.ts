@@ -20,6 +20,9 @@ export class Jump {
     /** @brief  Position of the player. */
     private m_position: PIXI.Point ;
 
+    /** @brief  Speed of the player. */
+    private m_speed: PIXI.Point ;
+
     /** @brief  Force of the jump. */
     private m_jumpForce: number ;
 
@@ -32,11 +35,12 @@ export class Jump {
     private m_onGroundPosition: number ;
 
     /** @brief  Create a Jump behavior for Player. */
-    constructor(position: PIXI.Point) {
+    constructor(position: PIXI.Point, speed: PIXI.Point) {
         this.m_position = position ;
         this.m_onGroundPosition = position.y ;
+        this.m_speed = speed ;
         this.m_amountJumps = 0 ;
-        this.m_jumpForce = 0 ;
+        this.m_speed.y = 0 ;
 
         // Used to enable the first jump.
         this.m_framesSinceLastJump = Jump.AmountFrameBeforeJump ;
@@ -46,7 +50,7 @@ export class Jump {
     public trigger() : void {
         if ((this.m_framesSinceLastJump >= Jump.AmountFrameBeforeJump)
                 && (this.m_amountJumps < Jump.MaxJumps)) {
-            this.m_jumpForce = Jump.InitialJumpForce ;
+            this.m_speed.y = Jump.InitialJumpForce ;
             this.m_amountJumps++ ;
             this.m_framesSinceLastJump = 0 ;
 
@@ -58,8 +62,8 @@ export class Jump {
 
     /** @brief  Refresh the jump position of the player. */
     private updateJump() : void {
-        this.m_position.y += this.m_jumpForce ;
-        this.m_jumpForce += Jump.JumpForceDecrease ;
+        this.m_position.y += this.m_speed.y ;
+        this.m_speed.y += Jump.JumpForceDecrease ;
         dispatchEvent(new Event(Jump.JumpPlayerUpdateEvent)) ;
 
         if (this.m_position.y < this.m_onGroundPosition) {
@@ -69,13 +73,13 @@ export class Jump {
         else {
             this.m_position.y = this.m_onGroundPosition ;
             this.m_amountJumps = 0 ;
-            this.m_jumpForce = 0 ;
+            this.m_speed.y = 0 ;
             this.m_framesSinceLastJump = Jump.AmountFrameBeforeJump ;
         }
     }
 
-    /** @brief  Get the force applied on Player for juming. */
+    /** @brief  Get the force applied on Player for jumping. */
     public get Force() : number {
-        return this.m_jumpForce ;
+        return this.m_speed.y ;
     }
 } ;

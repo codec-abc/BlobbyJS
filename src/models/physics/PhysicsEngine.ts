@@ -52,33 +52,29 @@ export class PhysicsEngine {
         for (var rigid of this.m_rigidBodies) {
             var rigidPosition: PIXI.Point = rigid.Position ;
             var rigidAABB: PIXI.Rectangle = rigid.AABB ;
-            var rigidAbsoluteAABB = rigidAABB.clone() ;
+            var rigidAbsoluteAABB: PIXI.Rectangle = rigidAABB.clone() ;
+            // Compute the absolute position of the AABB for the rigid body.
             rigidAbsoluteAABB.x += rigidPosition.x ;
             rigidAbsoluteAABB.y += rigidPosition.y ;
 
             var isRigidFalling: boolean = true ;
             for (var obstacle of this.m_obstacles) {
-                var kinematicAbsoluteAABB = obstacle.AABB.clone() ;
+                var kinematicAbsoluteAABB: PIXI.Rectangle = obstacle.AABB.clone() ;
+                // Compute the absolute position of the AABB for the obstacle.
                 kinematicAbsoluteAABB.x += obstacle.CurrentPosition.x ;
                 kinematicAbsoluteAABB.y += obstacle.CurrentPosition.y ;
 
                 if (Geometry.Intersect(rigidAbsoluteAABB, kinematicAbsoluteAABB)) {
-                    // Force of X axis.
-                    var ratioX: number = Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
-                    rigid.Force.x = ratioX ;
+                    this.avoidIntersectionOnY(rigid, rigidAbsoluteAABB, obstacle, kinematicAbsoluteAABB) ;
 
-                    if (Math.abs(rigid.Force.x) < PhysicsEngine.NullForceThreshold) {
-                        rigid.Force.x = 0 ;
-                    }
-
-                    // Force of Y axis.
-                    var ratioY: number = Geometry.VerticalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
-                    rigid.Force.y = -rigid.Force.y * rigid.Restitution * ratioY ;
-
-                    if (Math.abs(rigid.Force.y) < PhysicsEngine.NullForceThreshold) {
-                        rigid.Force.y = 0 ;
-                        isRigidFalling = false ;
-                    }
+                    var hasContact: boolean = this.computeCollision
+                    (
+                        rigid,
+                        rigidAbsoluteAABB,
+                        obstacle,
+                        kinematicAbsoluteAABB
+                    ) ;
+                    isRigidFalling = isRigidFalling && !hasContact;
                 }
             }
             rigid.IsFalling = isRigidFalling ;
@@ -88,31 +84,110 @@ export class PhysicsEngine {
                 continue ;
             }
 
-            // Apply friction on the ball when it is on ground.
-            if (rigid.IsOnGround) {
-                if (rigid.Force.x > 0) {
-                    rigid.Force.x -= PhysicsEngine.Friction ;
-                }
-                else if (rigid.Force.x < 0) {
-                    rigid.Force.x += PhysicsEngine.Friction ;
-                }
+            this.applyForces(rigid) ;
+        }
+    }
 
-                // Stop completely the ball if the move is close to the
-                // threshold.
-                if (Math.abs(rigid.Force.x) < PhysicsEngine.Friction) {
-                    rigid.Force.x = 0 ;
-                }
+    /**
+     * @brief   Avoid intersections of rigid body and obstacle: unexpected
+     *          behavior in the physics engine.
+     * @param   rigid                   The rigid body.
+     * @param   rigidAbsoluteAABB       AABB of the rigid body at its absolute
+     *                                  position.
+     * @param   obstacle                The kinematic body.
+     * @param   kinematicAbsoluteAABB   AABB of the kinematic body at its absolute
+     *                                  position.
+     * @return  The vertical alignment ratio between the rigid body and the
+     *          obstacle.
+     */
+    private avoidIntersectionOnY(
+                                 rigid: RigidBodyModule.RigidBody,
+                                 rigidAbsoluteAABB: PIXI.Rectangle,
+                                 obstacle: KinematicBodyModule.KinematicBody,
+                                 kinematicAbsoluteAABB: PIXI.Rectangle
+                             ): void {
+        var verticalAlignment: number ;
+        verticalAlignment = Geometry.VerticalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
+        if (verticalAlignment < 0) {
+            // The obsacle is over the rigid body.
+            // The rigid body is then placed below the obstacle.
+            var rigidUpdatedY: number;
+            rigidUpdatedY = obstacle.CurrentPosition.y + obstacle.AABB.height ;
+            rigid.updatePositionOnY(rigidUpdatedY) ;
+        }
+        else if (verticalAlignment > 0) {
+            // The obsacle is under the rigid body.
+            // The rigid body is then placed above the obstacle.
+            var rigidUpdatedY: number ;
+            rigidUpdatedY = obstacle.CurrentPosition.y - rigid.AABB.height ;
+            rigid.updatePositionOnY(rigidUpdatedY) ;
+        }
+    }
+
+    /**
+     * @brief   Compute the collision between a rigid body and a kinematic body.
+     * @param   rigid                   The rigid body.
+     * @param   rigidAbsoluteAABB       AABB of the rigid body at its absolute
+     *                                  position.
+     * @param   obstacle                The kinematic body.
+     * @param   kinematicAbsoluteAABB   AABB of the kinematic body at its absolute
+     *                                  position.
+     * @return  TRUE if the rigid body falls as the kinematic body is not just
+     *          below (in contact). FALSE if the rigid body does not fall.
+     */
+    private computeCollision(
+                             rigid: RigidBodyModule.RigidBody,
+                             rigidAbsoluteAABB: PIXI.Rectangle,
+                             obstacle: KinematicBodyModule.KinematicBody,
+                             kinematicAbsoluteAABB: PIXI.Rectangle
+                            ): boolean {
+        // Force of X axis.
+        var ratioX: number = Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
+        rigid.Force.x = ratioX + obstacle.SpeedX ;
+
+        if (Math.abs(rigid.Force.x) < PhysicsEngine.NullForceThreshold) {
+            rigid.Force.x = 0 ;
+        }
+
+        // Force of Y axis.
+        rigid.Force.y = (20 * -obstacle.SpeedY) - (rigid.Force.y * rigid.Restitution) ;
+
+        if (Math.abs(rigid.Force.y) < PhysicsEngine.NullForceThreshold) {
+            rigid.Force.y = 0 ;
+            return false ;
+        }
+
+        return true ;
+    }
+
+    /**
+     * @brief   Apply forces on a rigid body.
+     * @param   rigid   The rigid body.
+     */
+    private applyForces(rigid: RigidBodyModule.RigidBody): void {
+        // Apply friction on the ball when it is on ground.
+        if (rigid.IsOnGround) {
+            if (rigid.Force.x > 0) {
+                rigid.Force.x -= PhysicsEngine.Friction ;
+            }
+            else if (rigid.Force.x < 0) {
+                rigid.Force.x += PhysicsEngine.Friction ;
             }
 
-            // Apply physics on the rigid body.
-            if (rigid.IsFalling) {
-                var area: PIXI.Rectangle = rigid.Area ;
-                var momentForce: number = (this.m_gravity * rigid.Weigth) / 10 ;
-                rigid.Force.y += momentForce ;
-                rigid.updatePositionOnY(rigid.Position.y + rigid.Force.y) ;
-
-                rigid.updatePositionOnX(rigid.Position.x + rigid.Force.x) ;
+            // Stop completely the ball if the move is close to the
+            // threshold.
+            if (Math.abs(rigid.Force.x) < PhysicsEngine.Friction) {
+                rigid.Force.x = 0 ;
             }
+        }
+
+        // Apply physics on the rigid body.
+        if (rigid.IsFalling) {
+            var momentForce: number = (this.m_gravity * rigid.Weigth) / 10 ;
+            rigid.Force.y += momentForce ;
+            rigid.updatePositionOnY(rigid.Position.y + rigid.Force.y) ;
+
+            rigid.updatePositionOnX(rigid.Position.x + rigid.Force.x) ;
         }
     }
 

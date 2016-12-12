@@ -71,6 +71,11 @@ export class KinematicBody {
         return this.m_currentPosition ;
     }
 
+    /** @brief  Get the speed of the Kinematic Body on both X and Y axes. */
+    public get Speed(): PIXI.Point {
+        return this.m_speed ;
+    }
+
     /** @brief  Get the speed of the KinematicBody on X axis. */
     public get SpeedX(): number {
         return this.m_speed.x ;
