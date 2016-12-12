@@ -45,7 +45,7 @@ export class GameScene extends PIXI.Container {
 
         this.m_renderer = PIXI.autoDetectRenderer(width, height) ;
 
-        var parentContainer: JQuery = $('body') ;
+        var parentContainer: JQuery = $('#GameCanvas') ;
         parentContainer.append(this.m_renderer.view) ;
     }
 

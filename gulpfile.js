@@ -5,15 +5,16 @@ var ts = require('gulp-typescript');
 var runSequence = require('run-sequence');
 var run = require('gulp-run');
 var webserver = require('gulp-webserver');
+var webpack = require('gulp-webpack');
 
 gulp.task('build', function(callback)
 {
-    runSequence('less','copyHtml','copyLib','copyResources','compile', 'copyElectronPackageFile', callback);
+    runSequence('less','copyHtml','copyLib','copyResources','webpack', 'copyElectronPackageFile', callback);
 });
 
 gulp.task('runElectron', function(callback)
 {
-    runSequence('build','openInElectron', callback);
+    runSequence('build', 'copyMainElectron', 'openInElectron', callback);
 });
 
 gulp.task('runWeb', function(callback)
@@ -26,16 +27,21 @@ gulp.task('less', function ()
     return gulp.src('css/all.less').pipe(less()).pipe(gulp.dest('build/css'));
 });
 
-gulp.task('compile', function () 
+gulp.task('webpack', function()
 {
-    var tsProject = ts.createProject('tsconfig.json');
-    var tsResult = tsProject.src().pipe(ts(tsProject));
-    return tsResult.pipe(gulp.dest('build/'));
+    return gulp.src('./src/Main.ts')
+    .pipe(webpack( require('./webpack.config.js') ))
+    .pipe(gulp.dest('./'));
 });
 
 gulp.task('copyHtml', function () 
 {
-    return gulp.src('html/*.html').pipe(gulp.dest('build/'));;
+    return gulp.src('./*.html').pipe(gulp.dest('build/'));;
+});
+
+gulp.task('copyMainElectron', function () 
+{
+    return gulp.src('./BlobbyVolley.js').pipe(gulp.dest('build/'));;
 });
 
 gulp.task('copyResources', function () 
