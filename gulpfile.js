@@ -14,7 +14,7 @@ gulp.task('build', function(callback)
 
 gulp.task('runElectron', function(callback)
 {
-    runSequence('build','openInElectron', callback);
+    runSequence('build', 'copyMainElectron', 'openInElectron', callback);
 });
 
 gulp.task('runWeb', function(callback)
@@ -36,7 +36,12 @@ gulp.task('webpack', function()
 
 gulp.task('copyHtml', function () 
 {
-    return gulp.src('html/*.html').pipe(gulp.dest('build/'));;
+    return gulp.src('./*.html').pipe(gulp.dest('build/'));;
+});
+
+gulp.task('copyMainElectron', function () 
+{
+    return gulp.src('./BlobbyVolley.js').pipe(gulp.dest('build/'));;
 });
 
 gulp.task('copyResources', function () 

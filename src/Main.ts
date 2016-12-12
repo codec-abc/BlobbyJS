@@ -7,7 +7,11 @@ var isRunningInElectron = (<any> window).isRunningInElectron;
 var modules = (<any> window).nodeModules;
 if(isRunningInElectron)
 {
-    //import * as fileSystem from "fs";
-    // let fs : typeof fileSystem  = nodeModules.fs;
-    // fs.writeFile("test.txt", "Hey there!", function(err) 
+    /*
+    let fs = modules.fs;
+    fs.writeFile("test.txt", "Hey there!", function(err : any)
+    {
+
+    });
+    */
 }

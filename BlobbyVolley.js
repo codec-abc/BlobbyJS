@@ -1,24 +1,24 @@
-/// <reference path="../typings/electron/electron.d.ts"/>
-/// <reference path="../typings/node/node.d.ts"/>
 "use strict";
-const electron = require('electron');
+var electron = require('electron');
 // Module to control application life.
-const app = electron.app;
-const menu = electron.Menu;
-const menuitem = electron.MenuItem;
+var app = electron.app;
+var menu = electron.Menu;
+var menuitem = electron.MenuItem;
 // Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
+var BrowserWindow = electron.BrowserWindow;
 /**
  * @brief   Main class of the application, initializing the windows and their
  *          contents.
  * @author  Denis CARLUS
  * @version 1.0     2016/05
  */
-class BlobbyVolley {
+var BlobbyVolley = (function () {
+    function BlobbyVolley() {
+    }
     /**
      * @brief   Instantiation of the Animation Editor application.
      */
-    static main() {
+    BlobbyVolley.main = function () {
         app.on('window-all-closed', function () {
             if (process.platform != 'darwin') {
                 app.quit();
@@ -30,16 +30,16 @@ class BlobbyVolley {
             // Initialize main window.
             var mainWindow = BlobbyVolley.initializeMainWindow();
         });
-    }
+    };
     /**
      * @brief   Initialization of the main window of Animation Editor
      *          application.
      */
-    static initializeMainWindow() {
-        const mainWindowWidth = 1024;
-        const mainWindowHeight = 640;
+    BlobbyVolley.initializeMainWindow = function () {
+        var mainWindowWidth = 1024;
+        var mainWindowHeight = 640;
         // Create the browser window.
-        var mainWindow : Electron.BrowserWindow | null = new BrowserWindow({
+        var mainWindow = new BrowserWindow({
             width: mainWindowWidth,
             height: mainWindowHeight
         });
@@ -57,8 +57,9 @@ class BlobbyVolley {
             mainWindow = null;
         });
         return mainWindow;
-    }
-}
+    };
+    return BlobbyVolley;
+}());
 /**
  * @brief   Path to the source files of the Animation Editor application.
  */

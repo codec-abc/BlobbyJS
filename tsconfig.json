@@ -6,7 +6,7 @@
         "noImplicitReturns" : true,
         "noImplicitAny" : true,
         "strictNullChecks" : true,
-        "module": "amd",
+        "module": "commonjs",
         "outDir": "build/"
     },
     "atom": 
