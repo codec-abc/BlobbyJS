@@ -71,6 +71,7 @@ export class Behavior extends KinematicBodyModule.KinematicBody {
     public moveLeft() : void {
         if (this.CurrentPosition.x > this.MinBound) {
             this.m_moveForce = -this.SpeedFactor ;
+            this.SpeedX = this.m_moveForce ;
         }
         else {
             this.m_moveForce = 0 ;
@@ -83,6 +84,7 @@ export class Behavior extends KinematicBodyModule.KinematicBody {
     public moveRight() : void {
         if (this.CurrentPosition.x < this.MaxBound) {
             this.m_moveForce = this.SpeedFactor ;
+            this.SpeedX = this.m_moveForce ;
         }
         else {
             this.m_moveForce = 0 ;

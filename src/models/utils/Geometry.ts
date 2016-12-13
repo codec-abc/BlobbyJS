@@ -31,6 +31,50 @@ export class Geometry {
     }
 
     /**
+     * @brief   Check if two rectangles strictly intersect on X axis.
+     * @param   first   First rectangle.
+     * @param   first   First rectangle.
+     * @return  TRUE if the rectangles intersect on X axis only, FALSE otherwise.
+     */
+    public static IntersectXOnly
+    (
+        first: PIXI.Rectangle,
+        second: PIXI.Rectangle
+    ): boolean {
+        var smaller: PIXI.Rectangle ;
+        var taller: PIXI.Rectangle ;
+
+        if (first.height > 0) {
+            smaller = first ;
+            taller = second ;
+        }
+        else {
+            smaller = second ;
+            taller = first ;
+        }
+
+        var smallerY1 = smaller.y ;
+        var smallerY2 = smaller.y + smaller.height ;
+        var tallerY1 = taller.y ;
+        var tallerY2 = taller.y + taller.height ;
+
+        // The smaller is contained in the height of the taller.
+        if ((smallerY1 >= tallerY1) && (smallerY2 <= tallerY2)) {
+            var smallerX1 = smaller.x ;
+            var smallerX2 = smaller.x + smaller.width ;
+            var tallerX1 = taller.x ;
+            var tallerX2 = taller.x + taller.width ;
+
+            // Do the X coordinates of the smaller are inside the width of the
+            // taller ?
+            return ((smallerX2 > tallerX1) && (smallerX2 < tallerX2))
+                        || ((smallerX1 > tallerX1) && (smallerX1 < tallerX2)) ;
+        }
+
+        return false ;
+    }
+
+    /**
      * @brief   Get the alignement of two rectangles as a float value.
      *          This value is a ratio, alignment of second rectangle over the
      *          height of the first one.
