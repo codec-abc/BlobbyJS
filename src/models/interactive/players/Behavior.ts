@@ -34,7 +34,6 @@ export class Behavior extends KinematicBodyModule.KinematicBody {
      */
     constructor(
                 position: PIXI.Point,
-                area: PIXI.Rectangle,
                 speedFactor: number
                ) {
         super(new PIXI.Point(position.x, position.y)) ;

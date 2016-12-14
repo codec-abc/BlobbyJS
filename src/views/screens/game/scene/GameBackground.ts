@@ -4,6 +4,9 @@ let ElementData = ElementDataModule.ElementData ;
 import ResourcesModule = require('../GameResources') ;
 let Resources = ResourcesModule.GameResources ;
 
+import NetViewModule = require('../interactive/NetView');
+import NetControllerModule = require('../../../../controllers/NetController');
+
 /**
  * @brief   Class to manage the background of the game screen.
  */
@@ -30,13 +33,9 @@ export class GameBackground extends PIXI.Container {
     private m_viewportSize: PIXI.Point ;
 
     /**
-     * @brief   Sprite of the net that can have interactions with the ball and
-     *          players.
+     * @brief   The net that can have interactions with the ball and players.
      */
-    private m_net: PIXI.Sprite ;
-
-    /** @brief  Some data on the net element. */
-    private m_netData: ElementDataModule.ElementData ;
+     private m_net: NetControllerModule.NetController ;
 
     /**
      * @brief   Create a new GameBackground.
@@ -49,7 +48,6 @@ export class GameBackground extends PIXI.Container {
 
         var bgAssetsLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader() ;
         bgAssetsLoader.add('Ground', GameBackground.GroundTexturePath) ;
-        bgAssetsLoader.add('Net', GameBackground.NetTexturePath) ;
         bgAssetsLoader.once('complete', this.onAssetsLoaded.bind(this)) ;
         bgAssetsLoader.load() ;
     }
@@ -59,8 +57,6 @@ export class GameBackground extends PIXI.Container {
      */
     private onAssetsLoaded() : void {
         this.setGround() ;
-        this.setNet() ;
-
         dispatchEvent(new Event(GameBackground.BackgroundLoadedEvent)) ;
     }
 
@@ -72,29 +68,33 @@ export class GameBackground extends PIXI.Container {
         var sprite: PIXI.Sprite = new PIXI.Sprite(texture) ;
         this.addChild(sprite) ;
         sprite.position.y = this.m_viewportSize.y - texture.baseTexture.height ;
+
+        NetViewModule.NetView.PreloadSprites() ;
+        addEventListener(
+            NetViewModule.NetView.NetLoadedEvent,
+            this.setNet.bind(this)
+        ) ;
     }
 
     /**
      * @brief   Set the net texture.
      */
     private setNet() : void {
-        var texture: PIXI.Texture = PIXI.Texture.fromImage(GameBackground.NetTexturePath) ;
-        this.m_net = new PIXI.Sprite(texture) ;
-        this.addChild(this.m_net) ;
-        this.m_net.position.x = (this.m_viewportSize.x - texture.baseTexture.width) / 2 ;
-        this.m_net.position.y = this.m_viewportSize.y - texture.baseTexture.height - 20 ;
+        // Texture of the net.
+        var netTexture: PIXI.Texture = PIXI.Texture.fromImage(GameBackground.NetTexturePath) ;
 
-        this.m_netData = new ElementData(
-                                         this.m_net.position,
-                                         this.m_net.width,
-                                         this.m_net.height
-                                        ) ;
-    }
+        // Position of the net.
+        var netPosition: PIXI.Point = new PIXI.Point(
+            (this.m_viewportSize.x / 2) - netTexture.width,
+            this.m_viewportSize.y - netTexture.height - 20
+        ) ;
 
-    /**
-     * @brief   Get data on the net shape.
-     */
-    public get NetData() : ElementDataModule.ElementData {
-        return this.m_netData ;
+        // Setup the net.
+        var data: NetControllerModule.NetSetupData ;
+        data = new NetControllerModule.NetSetupData(netPosition, netTexture) ;
+        this.m_net = new NetControllerModule.NetController(data) ;
+
+        this.addChild(this.m_net.View.NetSprite) ;
+
     }
 } ;

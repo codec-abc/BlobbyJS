@@ -92,7 +92,6 @@ export class PlayerController {
     private setModel(data: PlayerSetupData): void {
         this.m_model = new PlayerModelModule.Player(
                                                     data.RealPosition,
-                                                    data.Area,
                                                     data.SpeedFactor,
                                                     data.MaxScore
                                                    ) ;
