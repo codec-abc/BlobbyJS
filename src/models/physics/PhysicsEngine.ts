@@ -83,7 +83,7 @@ export class PhysicsEngine {
                             kinematicAbsoluteAABB
                         ) ;
 
-                        rigid.Force.x = obstacle.SpeedX ;
+                        rigid.Force.x = (-rigid.Force.x * rigid.Restitution) + obstacle.SpeedX ;
                     }
 
                     var hasContact: boolean = this.computeCollision
@@ -211,9 +211,12 @@ export class PhysicsEngine {
                              obstacle: KinematicBodyModule.KinematicBody,
                              kinematicAbsoluteAABB: PIXI.Rectangle
                             ): boolean {
+        const MaxForce: number = 5 ;
+
         // Force of X axis.
         var ratioX: number = Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
-        rigid.Force.x += (ratioX * 5) ;
+        rigid.Force.x += (ratioX * MaxForce) ;
+        rigid.Force.x = Math.min(rigid.Force.x, MaxForce) ;
 
         if (Math.abs(rigid.Force.x) < PhysicsEngine.NullForceThreshold) {
             rigid.Force.x = 0 ;
