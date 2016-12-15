@@ -1,7 +1,7 @@
 import PhysicsEventsModule = require('./PhysicsEvents');
 import RigidBodyModule = require('./RigidBody');
 import KinematicBodyModule = require('./KinematicBody');
-import GeometryModule = require('../utils/Geometry');
+import GeometryModule = require('../../utils/Geometry');
 
 let PhysicsEvents = PhysicsEventsModule.PhysicsEvents ;
 let Geometry = GeometryModule.Geometry ;

@@ -1,5 +1,5 @@
 import BallViewModule = require('../views/screens/game/interactive/BallView') ;
-import BallModule = require('../models/interactive/balls/Ball');
+import BallModule = require('../models/interactive/balls/Ball') ;
 
 /**
  * @brief   Data to set up a Ball.
@@ -56,7 +56,8 @@ export class BallController {
      */
     public update(): void {
         this.m_model.update() ;
-        this.m_view.moveAt(this.m_model.Position) ;
+        this.m_view.moveAt(this.m_model.CenterPosition) ;
+        this.m_view.rotate(this.m_model.SpeedY / 2) ;
     }
 
     /**

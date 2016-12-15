@@ -1,6 +1,9 @@
 import ResourcesModule = require('../GameResources') ;
 let Resources = ResourcesModule.GameResources ;
 
+import GeometryModule = require('../../../../utils/Geometry') ;
+let Geometry = GeometryModule.Geometry ;
+
 /**
  * @brief   Graphical representation of the Ball.
  */
@@ -32,6 +35,7 @@ export class BallView {
                 position: PIXI.Point
                ) {
         this.m_ballSprite = new PIXI.Sprite(texture) ;
+        this.m_ballSprite.pivot = Geometry.GetCenter(this.m_ballSprite.getLocalBounds()) ;
         this.moveAt(position) ;
     }
 
@@ -58,6 +62,14 @@ export class BallView {
     public moveAt(position: PIXI.Point) : void {
         this.m_ballSprite.position.x = position.x ;
         this.m_ballSprite.position.y = position.y ;
+    }
+
+    /**
+     * Rotate the sprite of the ball.
+     * @param {number} angle Angle to apply to the sprite.
+     */
+    public rotate(angle: number) : void {
+        this.m_ballSprite.rotation = angle ;
     }
 
     /**

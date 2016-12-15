@@ -1,4 +1,4 @@
-import ElementDataModule = require('../../../../models/utils/ElementData');
+import ElementDataModule = require('../../../../utils/ElementData');
 let ElementData = ElementDataModule.ElementData ;
 
 import ResourcesModule = require('../GameResources') ;
