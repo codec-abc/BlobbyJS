@@ -166,7 +166,7 @@ export class PhysicsEngine {
 
         // Force of X axis.
         var ratioX: number = Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
-        rigid.Force.x += (ratioX * MaxForce) ;
+        rigid.Force.x = (ratioX * MaxForce) ;
         rigid.Force.x = Math.min(rigid.Force.x, MaxForce) ;
 
         if (Math.abs(rigid.Force.x) < PhysicsEngine.NullThreshold) {
