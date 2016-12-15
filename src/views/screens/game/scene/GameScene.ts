@@ -55,6 +55,7 @@ export class GameScene extends PIXI.Container {
     private onSceneLoaded(): void {
         this.addChild(this.m_sceneLoader.Background) ;
         this.addChild(this.m_sceneLoader.Foreground) ;
+
         requestAnimationFrame(this.animate.bind(this)) ;
     }
 
