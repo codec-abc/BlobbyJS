@@ -1,3 +1,14 @@
+/**
+ * Axis and direction.
+ */
+export enum Axis {
+    None   = 0x00,
+    PlusX  = 0x01,
+    PlusY  = 0x02,
+    MinusX = 0x11,
+    MinusY = 0x12
+} ;
+
 export class Geometry {
     /**
      * @brief   Check if two rectangles intersect.
@@ -30,48 +41,52 @@ export class Geometry {
                 && (y1 < y0 + first.height) ;
     }
 
+
     /**
-     * @brief   Check if two rectangles strictly intersect on X axis.
-     * @param   first   First rectangle.
-     * @param   first   First rectangle.
-     * @return  TRUE if the rectangles intersect on X axis only, FALSE otherwise.
+     * Check if a point is outside a rectangle. The returned value indicates on
+     * which axes the point is ouside compared to the center of the rectangle.
+     * @param  {PIXI.Point}     pt  The point to check if it is outside.
+     * @param  {PIXI.Rectangle} rec The rectangle for which the point is tested.
+     * @return {Array<Axis>}        Axes on which the point is outside the
+     *                              rectangle.
      */
-    public static IntersectXOnly
-    (
-        first: PIXI.Rectangle,
-        second: PIXI.Rectangle
-    ): boolean {
-        var smaller: PIXI.Rectangle ;
-        var taller: PIXI.Rectangle ;
+    public static IsOutside(pt: PIXI.Point, rec: PIXI.Rectangle): Array<Axis> {
+        var result: Axis[] = new Array<Axis>() ;
 
-        if (first.height > 0) {
-            smaller = first ;
-            taller = second ;
+        // Is the point outside on X axis?
+        if (pt.x < (rec.x)) {
+            result.push(Axis.MinusX) ;
         }
-        else {
-            smaller = second ;
-            taller = first ;
+        else if (pt.x > (rec.x + rec.width)) {
+            result.push(Axis.PlusX) ;
         }
 
-        var smallerY1 = smaller.y ;
-        var smallerY2 = smaller.y + smaller.height ;
-        var tallerY1 = taller.y ;
-        var tallerY2 = taller.y + taller.height ;
-
-        // The smaller is contained in the height of the taller.
-        if ((smallerY1 >= tallerY1) && (smallerY2 <= tallerY2)) {
-            var smallerX1 = smaller.x ;
-            var smallerX2 = smaller.x + smaller.width ;
-            var tallerX1 = taller.x ;
-            var tallerX2 = taller.x + taller.width ;
-
-            // Do the X coordinates of the smaller are inside the width of the
-            // taller ?
-            return ((smallerX2 > tallerX1) && (smallerX2 < tallerX2))
-                        || ((smallerX1 > tallerX1) && (smallerX1 < tallerX2)) ;
+        // Is the point outside on Y axis?
+        if (pt.y < (rec.y)) {
+            result.push(Axis.MinusY) ;
+        }
+        else if (pt.y > (rec.y + rec.height)) {
+            result.push(Axis.PlusY) ;
         }
 
-        return false ;
+        return result ;
+    }
+
+    /**
+     * Get the center of a rectangle. This is based on the position of the
+     * rectangle.
+     * @param  {PIXI.Rectangle} rec The rectangle to get center of.
+     * @return {PIXI.Point}         The center point of the rectangle.
+     */
+    public static GetCenter(rec: PIXI.Rectangle) : PIXI.Point {
+        var topX: number = rec.x ;
+        var bottomX: number = rec.x + rec.width ;
+        var centerX: number = (bottomX + topX) / 2 ;
+
+        var topY: number = rec.y ;
+        var bottomY: number = rec.y + rec.height ;
+        var centerY: number = (bottomY + topY) / 2 ;
+        return new PIXI.Point(centerX, centerY) ;
     }
 
     /**

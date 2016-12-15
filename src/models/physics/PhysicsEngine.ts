@@ -65,26 +65,12 @@ export class PhysicsEngine {
                 kinematicAbsoluteAABB.y += obstacle.CurrentPosition.y ;
 
                 if (Geometry.Intersect(rigidAbsoluteAABB, kinematicAbsoluteAABB)) {
-                    // Avoid intersections.
-                    this.avoidIntersectionOnY(
+                    this.avoidIntersection(
                         rigid,
                         rigidAbsoluteAABB,
                         obstacle,
                         kinematicAbsoluteAABB
                     ) ;
-
-                    var collisionOnX: boolean = Geometry.IntersectXOnly(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
-                    if (collisionOnX) {
-                        // Avoid intersections.
-                        this.avoidIntersectionOnX(
-                            rigid,
-                            rigidAbsoluteAABB,
-                            obstacle,
-                            kinematicAbsoluteAABB
-                        ) ;
-
-                        rigid.Force.x = (-rigid.Force.x * rigid.Restitution) + obstacle.SpeedX ;
-                    }
 
                     var hasContact: boolean = this.computeCollision
                     (
@@ -115,83 +101,48 @@ export class PhysicsEngine {
      * @param   rigidAbsoluteAABB       AABB of the rigid body at its absolute
      *                                  position.
      * @param   obstacle                The kinematic body.
-     * @param   kinematicAbsoluteAABB   AABB of the kinematic body at its absolute
-     *                                  position.
-     * @return  TRUE if there is a collision updating Y position, FALSE
-     *          otherwise.
+     * @param   kinematicAbsoluteAABB   AABB of the kinematic body at its
+     *                                  absolute position.
      */
-    private avoidIntersectionOnY(
+    private avoidIntersection(
         rigid: RigidBodyModule.RigidBody,
         rigidAbsoluteAABB: PIXI.Rectangle,
         obstacle: KinematicBodyModule.KinematicBody,
         kinematicAbsoluteAABB: PIXI.Rectangle
-    ): boolean {
-        var isYUpdated: boolean = false ;
-        var rigidUpdatedY: number = rigid.AABB.y ;
+    ): void {
+        var centerRigid: PIXI.Point = Geometry.GetCenter(rigidAbsoluteAABB) ;
+        var outsideAxes: GeometryModule.Axis[] = Geometry.IsOutside(centerRigid, kinematicAbsoluteAABB) ;
 
-        var verticalAlignment: number ;
-        var horizontalAlignment: number ;
-        verticalAlignment = Geometry.VerticalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
-        horizontalAlignment = Math.abs(Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB)) ;
-        if ((verticalAlignment < 0) && (horizontalAlignment < PhysicsEngine.NullThreshold)) {
-            // The obstacle is over the rigid body.
-            // The rigid body is then placed below the obstacle.
-            rigidUpdatedY = obstacle.CurrentPosition.y + obstacle.AABB.height ;
-            rigid.updatePositionOnY(rigidUpdatedY) ;
-            isYUpdated = true ;
-        }
-        else if (verticalAlignment > 0) {
-            // The obstacle is under the rigid body.
-            // The rigid body is then placed above the obstacle.
-            rigidUpdatedY = obstacle.CurrentPosition.y - rigid.AABB.height ;
-            rigid.updatePositionOnY(rigidUpdatedY) ;
-            isYUpdated = true ;
-        }
-        return isYUpdated ;
-    }
+        if (outsideAxes.length == 1) {
+            // At least one axis on which the center is outside the area of
+            // obstacle.
+            var axis: GeometryModule.Axis = outsideAxes[0] ;
+            switch(axis) {
+                case GeometryModule.Axis.PlusX:
+                    var updatedX: number = obstacle.CurrentPosition.x + obstacle.AABB.width ;
+                    rigid.updatePositionOnX(updatedX) ;
+                    break ;
 
-    /**
-     * @brief   Avoid intersections of rigid body and obstacle: unexpected
-     *          behavior in the physics engine.
-     * @param   rigid                   The rigid body.
-     * @param   rigidAbsoluteAABB       AABB of the rigid body at its absolute
-     *                                  position.
-     * @param   obstacle                The kinematic body.
-     * @param   kinematicAbsoluteAABB   AABB of the kinematic body at its absolute
-     *                                  position.
-     * @return  TRUE if there is a collision updating X position, FALSE
-     *          otherwise.
-     */
-    private avoidIntersectionOnX(
-        rigid: RigidBodyModule.RigidBody,
-        rigidAbsoluteAABB: PIXI.Rectangle,
-        obstacle: KinematicBodyModule.KinematicBody,
-        kinematicAbsoluteAABB: PIXI.Rectangle
-    ): boolean {
-        var isXUpdated: boolean = false ;
-        var rigidUpdatedX: number = rigid.AABB.x ;
+                case GeometryModule.Axis.MinusX:
+                    var updatedX: number = obstacle.CurrentPosition.x - rigid.AABB.width ;
+                    rigid.updatePositionOnX(updatedX) ;
+                    break ;
 
-        var horizontalContact: number ;
-        horizontalContact = Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
-        if (horizontalContact < 0) {
-            // The obstacle is on left of the rigid body.
-            // The rigid body is then placed of the right the obstacle.
-            rigidUpdatedX = obstacle.CurrentPosition.x - rigid.AABB.width ;
-            rigid.updatePositionOnX(rigidUpdatedX) ;
-            isXUpdated = true ;
-        }
-        else if (horizontalContact > 0) {
-            // The obstacle is on the right of the rigid body.
-            // The rigid body is then placed on the left of the obstacle.
-            rigidUpdatedX = obstacle.CurrentPosition.x + obstacle.AABB.width ;
-            rigid.updatePositionOnX(rigidUpdatedX) ;
-            isXUpdated = true ;
+                case GeometryModule.Axis.PlusY:
+                    var updatedY: number = obstacle.CurrentPosition.y + obstacle.AABB.height ;
+                    rigid.updatePositionOnY(updatedY) ;
+                    break ;
+
+                case GeometryModule.Axis.MinusY:
+                    var updatedY: number = obstacle.CurrentPosition.y - rigid.AABB.height ;
+                    rigid.updatePositionOnY(updatedY) ;
+                    break ;
+            }
         }
         else {
-            var rigidUpdatedY: number = obstacle.CurrentPosition.y - rigid.AABB.height ;
-            rigid.updatePositionOnY(rigidUpdatedY) ;
+            // The center is either outside on both axes or inside the area of
+            // obstacle on both axes.
         }
-        return isXUpdated ;
     }
 
     /**
