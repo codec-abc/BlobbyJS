@@ -17,7 +17,7 @@ export class PhysicsEngine {
     private static get GravityForce(): number { return 9.8 ; }
 
     /** @brief  Threshold to consider no force is applied anymore. */
-    private static get NullForceThreshold(): number { return 0.1 ; }
+    private static get NullThreshold(): number { return 0.1 ; }
 
 
     /** @brief  Gravity force applied on RigidBodies. */
@@ -133,7 +133,7 @@ export class PhysicsEngine {
         var horizontalAlignment: number ;
         verticalAlignment = Geometry.VerticalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
         horizontalAlignment = Math.abs(Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB)) ;
-        if ((verticalAlignment < 0) && (horizontalAlignment < PhysicsEngine.NullForceThreshold)) {
+        if ((verticalAlignment < 0) && (horizontalAlignment < PhysicsEngine.NullThreshold)) {
             // The obstacle is over the rigid body.
             // The rigid body is then placed below the obstacle.
             rigidUpdatedY = obstacle.CurrentPosition.y + obstacle.AABB.height ;
@@ -218,19 +218,19 @@ export class PhysicsEngine {
         rigid.Force.x += (ratioX * MaxForce) ;
         rigid.Force.x = Math.min(rigid.Force.x, MaxForce) ;
 
-        if (Math.abs(rigid.Force.x) < PhysicsEngine.NullForceThreshold) {
+        if (Math.abs(rigid.Force.x) < PhysicsEngine.NullThreshold) {
             rigid.Force.x = 0 ;
         }
 
         // Force of Y axis.
-        if (Math.abs(obstacle.SpeedY) > PhysicsEngine.NullForceThreshold) {
+        if (Math.abs(obstacle.SpeedY) > PhysicsEngine.NullThreshold) {
             rigid.Force.y = -Math.abs(obstacle.SpeedY) ;
         }
         else {
             rigid.Force.y = -rigid.Force.y * rigid.Restitution ;
         }
 
-        if (Math.abs(rigid.Force.y) < PhysicsEngine.NullForceThreshold) {
+        if (Math.abs(rigid.Force.y) < PhysicsEngine.NullThreshold) {
             rigid.Force.y = 0 ;
             return false ;
         }
