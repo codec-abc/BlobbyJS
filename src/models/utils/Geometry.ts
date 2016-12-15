@@ -13,7 +13,7 @@ export class Geometry {
     /**
      * @brief   Check if two rectangles intersect.
      * @param   first   First rectangle.
-     * @param   first   First rectangle.
+     * @param   second  Second rectangle
      * @return  TRUE if the rectangles intersect, FALSE otherwise.
      */
     public static Intersect(
@@ -99,7 +99,7 @@ export class Geometry {
      *              - negative if the second rectangle is under the first one;
      *              - positive if the second rectangle is over the first one.
      * @param   first   First rectangle.
-     * @param   first   First rectangle.
+     * @param   second  Second rectangle.
      * @return  The ratio that indicates the position of the second rectangle
      *          relatively to the first one.
      */
@@ -123,7 +123,7 @@ export class Geometry {
      *              - negative if the second rectangle is under the first one;
      *              - positive if the second rectangle is over the first one.
      * @param   first   First rectangle.
-     * @param   first   First rectangle.
+     * @param   second  Second rectangle.
      * @return  The ratio that indicates the position of the second rectangle
      *          relatively to the first one.
      */
