@@ -220,7 +220,7 @@ export class PhysicsEngine {
                              obstacle: KinematicBodyModule.KinematicBody,
                              kinematicAbsoluteAABB: PIXI.Rectangle
                             ): boolean {
-        const MaxForce: number = 5 ;
+        const MaxForce: number = 10 ;
 
         // Force of X axis.
         if (!rigid.IsOnGround) {
