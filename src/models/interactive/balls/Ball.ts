@@ -46,6 +46,7 @@ export class Ball {
         var centerAbsolute: PIXI.Point = new PIXI.Point() ;
         centerAbsolute.x = center.x + this.m_physics.Position.x ;
         centerAbsolute.y = center.y + this.m_physics.Position.y ;
+
         return centerAbsolute ;
     }
 

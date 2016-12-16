@@ -41,6 +41,11 @@ export class Player {
         this.m_jump.trigger() ;
     }
 
+    /** @brief  Make the player score one point. */
+    public score(): void {
+        this.m_scoring.score(1) ;
+    }
+
     /**
      * @brief   Get the force applied on the player when jumping.
      */
@@ -58,5 +63,13 @@ export class Player {
     /** @brief  Set the AABB of the Ball. */
     public set AABB(aabb: PIXI.Rectangle) {
         this.m_behavior.AABB = aabb ;
+    }
+
+    /**
+     * Get the score of the Player.
+     * @return {number} Current score of the Player.
+     */
+    public get ScorePoints(): number {
+        return this.m_scoring.CurrentPoints ;
     }
 } ;
