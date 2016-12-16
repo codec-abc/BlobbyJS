@@ -50,21 +50,28 @@ export class PhysicsEngine {
      */
     public update(): void {
         for (var rigid of this.m_rigidBodies) {
-            var rigidPosition: PIXI.Point = rigid.Position ;
-            var rigidAABB: PIXI.Rectangle = rigid.AABB ;
-            var rigidAbsoluteAABB: PIXI.Rectangle = rigidAABB.clone() ;
-            // Compute the absolute position of the AABB for the rigid body.
-            rigidAbsoluteAABB.x += rigidPosition.x ;
-            rigidAbsoluteAABB.y += rigidPosition.y ;
+            var rigidAbsoluteAABB: PIXI.Rectangle ;
+            {
+                var rigidPosition: PIXI.Point = rigid.Position ;
+                var rigidAABB: PIXI.Rectangle = rigid.AABB ;
+                rigidAbsoluteAABB = this.getAbsoluteAABB(rigidAABB, rigidPosition) ;
+            }
+
+            // List of kinematic bodies that are in contact with the rigid body.
+            var obstaclesContact: Array<KinematicBodyModule.KinematicBody> = new Array() ;
 
             var isRigidFalling: boolean = true ;
             for (var obstacle of this.m_obstacles) {
-                var kinematicAbsoluteAABB: PIXI.Rectangle = obstacle.AABB.clone() ;
-                // Compute the absolute position of the AABB for the obstacle.
-                kinematicAbsoluteAABB.x += obstacle.CurrentPosition.x ;
-                kinematicAbsoluteAABB.y += obstacle.CurrentPosition.y ;
+                var kinematicAbsoluteAABB: PIXI.Rectangle ;
+                {
+                    var kinematicPosition: PIXI.Point = obstacle.CurrentPosition ;
+                    var kinematicAABB: PIXI.Rectangle = obstacle.AABB ;
+                    kinematicAbsoluteAABB = this.getAbsoluteAABB(kinematicAABB, kinematicPosition) ;
+                }
 
                 if (Geometry.Intersect(rigidAbsoluteAABB, kinematicAbsoluteAABB)) {
+                    obstaclesContact.push(obstacle) ;
+
                     this.avoidIntersection(
                         rigid,
                         rigidAbsoluteAABB,
@@ -83,6 +90,13 @@ export class PhysicsEngine {
                     isRigidFalling = isRigidFalling && !hasContact;
                 }
             }
+
+            // If the rigid body is touched by several kinematic bodies at the
+            // same time, it can generate an instable physics behavior.
+            if (obstaclesContact.length > 1) {
+                this.correctCollisions(rigid, rigidAbsoluteAABB, obstaclesContact) ;
+            }
+
             rigid.IsFalling = isRigidFalling ;
 
             // Do nothing if the rigid body is sleeping.
@@ -146,6 +160,60 @@ export class PhysicsEngine {
     }
 
     /**
+     * Correction of the collisions on a rigid body when it is in contact with
+     * several kinematic bodies at the same time.
+     * @param   rigid                   The rigid body.
+     * @param   rigidAbsoluteAABB       AABB of the rigid body at its absolute
+     *                                  position.
+     * @param   obstacles               List of obstacles in contact with the
+     *                                  rigid body.
+     */
+    private correctCollisions(
+        rigid: RigidBodyModule.RigidBody,
+        rigidAbsoluteAABB: PIXI.Rectangle,
+        obstacles: Array<KinematicBodyModule.KinematicBody>
+    ): void {
+        var fastestDirection: number = 0 ;
+        var fastestObstacle: KinematicBodyModule.KinematicBody = obstacles[0] ;
+        var slowestObstacle: KinematicBodyModule.KinematicBody = obstacles[0] ;
+
+        // Search for the slowest and the fastest obstacles that are moving in
+        // different directions (where at least one is moving).
+        obstacles.forEach((obstacle: KinematicBodyModule.KinematicBody) => {
+            fastestDirection = Math.sign(fastestObstacle.SpeedX) ;
+            var slowestDirection: number = Math.sign(slowestObstacle.SpeedX) ;
+            var currentDirection: number = Math.sign(obstacle.SpeedX) ;
+
+            var speedFastest: number = Math.abs(fastestObstacle.SpeedX) ;
+            var speedSlowest: number = Math.abs(slowestObstacle.SpeedX) ;
+            var speedCurrent: number = Math.abs(obstacle.SpeedX) ;
+            if ((speedCurrent > speedFastest)
+                    && (currentDirection != slowestDirection)) {
+                fastestObstacle = obstacle ;
+            }
+            else if ((speedCurrent < speedSlowest)
+                        && (currentDirection != fastestDirection)) {
+                slowestObstacle = obstacle ;
+            }
+        }) ;
+
+        // Put the rigid body above the fastest kinematic body.
+        rigid.updatePositionOnY(fastestObstacle.CurrentPosition.y - rigid.AABB.height) ;
+        // Apply a force to mimic an expulsion.
+        rigid.Force.y = Math.abs(fastestObstacle.SpeedX) ;
+        // Put the rigid body on the right side of the slowest obstacle
+        // according to the direction of the fastest one.
+        var rigidUpdatedX: number = 0 ;
+        if (fastestDirection < 0) {
+            rigidUpdatedX = slowestObstacle.CurrentPosition.x + slowestObstacle.AABB.width ;
+        }
+        else if (fastestDirection > 0) {
+            rigidUpdatedX = slowestObstacle.CurrentPosition.x - rigid.AABB.width ;
+        }
+        rigid.updatePositionOnX(rigidUpdatedX) ;
+    }
+
+    /**
      * @brief   Compute the collision between a rigid body and a kinematic body.
      * @param   rigid                   The rigid body.
      * @param   rigidAbsoluteAABB       AABB of the rigid body at its absolute
@@ -170,7 +238,7 @@ export class PhysicsEngine {
         rigid.Force.x = Math.min(rigid.Force.x, MaxForce) ;
 
         if (Math.abs(rigid.Force.x) < PhysicsEngine.NullThreshold) {
-            rigid.Force.x = 0 ;
+            rigid.Force.x = Math.random() ;
         }
 
         // Force of Y axis.
@@ -218,6 +286,23 @@ export class PhysicsEngine {
 
         rigid.updatePositionOnY(rigid.Position.y + rigid.Force.y) ;
         rigid.updatePositionOnX(rigid.Position.x + rigid.Force.x) ;
+    }
+
+    /**
+     * Compute the absolute AABB in world transformations.
+     * @param  {PIXI.Rectangle} aabb     The AABB in local transformations.
+     * @param  {PIXI.Point}     position Absolute position of the AABB.
+     * @return {PIXI.Rectangle}          A copy of the AABB, with absolute
+     *                                   position.
+     */
+    private getAbsoluteAABB(
+        aabb: PIXI.Rectangle,
+        position: PIXI.Point
+    ) : PIXI.Rectangle {
+        var absoluteAABB: PIXI.Rectangle = aabb.clone() ;
+        absoluteAABB.x += position.x ;
+        absoluteAABB.y += position.y ;
+        return absoluteAABB ;
     }
 
     /**
