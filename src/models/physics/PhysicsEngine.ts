@@ -201,16 +201,6 @@ export class PhysicsEngine {
         rigid.updatePositionOnY(fastestObstacle.CurrentPosition.y - rigid.AABB.height) ;
         // Apply a force to mimic an expulsion.
         rigid.Force.y = Math.abs(fastestObstacle.SpeedX) ;
-        // Put the rigid body on the right side of the slowest obstacle
-        // according to the direction of the fastest one.
-        var rigidUpdatedX: number = 0 ;
-        if (fastestDirection < 0) {
-            rigidUpdatedX = slowestObstacle.CurrentPosition.x + slowestObstacle.AABB.width ;
-        }
-        else if (fastestDirection > 0) {
-            rigidUpdatedX = slowestObstacle.CurrentPosition.x - rigid.AABB.width ;
-        }
-        rigid.updatePositionOnX(rigidUpdatedX) ;
     }
 
     /**
@@ -219,8 +209,8 @@ export class PhysicsEngine {
      * @param   rigidAbsoluteAABB       AABB of the rigid body at its absolute
      *                                  position.
      * @param   obstacle                The kinematic body.
-     * @param   kinematicAbsoluteAABB   AABB of the kinematic body at its absolute
-     *                                  position.
+     * @param   kinematicAbsoluteAABB   AABB of the kinematic body at its
+     *                                  absolute position.
      * @return  TRUE if the rigid body falls as the kinematic body is not just
      *          below (in contact). FALSE if the rigid body does not fall.
      */
@@ -233,19 +223,22 @@ export class PhysicsEngine {
         const MaxForce: number = 5 ;
 
         // Force of X axis.
-        var ratioX: number = Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
-        rigid.Force.x = (ratioX * MaxForce) ;
-        rigid.Force.x = Math.min(rigid.Force.x, MaxForce) ;
+        if (!rigid.IsOnGround) {
+            var ratioX: number = Geometry.HorizontalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
+            rigid.Force.x = (ratioX * MaxForce) ;
+            rigid.Force.x = Math.min(rigid.Force.x, MaxForce) ;
+        }
 
         if (Math.abs(rigid.Force.x) < PhysicsEngine.NullThreshold) {
             rigid.Force.x = Math.random() ;
         }
 
         // Force of Y axis.
+        var ratioY: number = Geometry.VerticalContact(rigidAbsoluteAABB, kinematicAbsoluteAABB) ;
         if (Math.abs(obstacle.SpeedY) > PhysicsEngine.NullThreshold) {
             rigid.Force.y = -Math.abs(obstacle.SpeedY) ;
         }
-        else {
+        else if (Math.abs(ratioY) >= 1) {
             rigid.Force.y = -rigid.Force.y * rigid.Restitution ;
         }
 
