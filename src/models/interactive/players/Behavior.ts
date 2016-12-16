@@ -8,7 +8,7 @@ export class Behavior extends KinematicBodyModule.KinematicBody {
     public static get MovePlayerUpdateEvent(): string { return 'MovePlayer' ; }
 
     /** @brief  Default speed to make Player move. */
-    public static get DefaultSpeed() : number { return 8 ; }
+    public static get DefaultSpeed() : number { return 12 ; }
 
 
     /** @brief  Initial position of the Player. */

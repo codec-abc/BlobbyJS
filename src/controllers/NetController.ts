@@ -32,7 +32,9 @@ export class NetSetupData {
      *         and the height of the Net sprite.
      */
     public get RealPosition(): PIXI.Point {
-        return this.m_position ;
+        var realPosition: PIXI.Point = this.m_position.clone() ;
+        realPosition.x += this.m_texture.width / 2 ;
+        return realPosition ;
     }
 } ;
 

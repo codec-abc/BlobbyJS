@@ -22,7 +22,7 @@ gulp.task('runWeb', function(callback)
     runSequence('build','runWebServer', callback);
 });
 
-gulp.task('less', function () 
+gulp.task('less', function ()
 {
     return gulp.src('css/all.less').pipe(less()).pipe(gulp.dest('build/css'));
 });
@@ -34,27 +34,27 @@ gulp.task('webpack', function()
     .pipe(gulp.dest('./'));
 });
 
-gulp.task('copyHtml', function () 
+gulp.task('copyHtml', function ()
 {
     return gulp.src('./*.html').pipe(gulp.dest('build/'));;
 });
 
-gulp.task('copyMainElectron', function () 
+gulp.task('copyMainElectron', function ()
 {
     return gulp.src('./BlobbyVolley.js').pipe(gulp.dest('build/'));;
 });
 
-gulp.task('copyResources', function () 
+gulp.task('copyResources', function ()
 {
     return gulp.src('resources/**').pipe(gulp.dest('build/resources'));
 });
 
-gulp.task('copyLib', function (callback) 
+gulp.task('copyLib', function (callback)
 {
     return gulp.src('lib/**').pipe(gulp.dest('build/lib'));
 });
 
-gulp.task('copyElectronPackageFile', function (callback) 
+gulp.task('copyElectronPackageFile', function (callback)
 {
     return gulp.src('electronPackage/**').pipe(gulp.dest('build'));
 });
@@ -69,12 +69,11 @@ gulp.task('runWebServer', function()
     gulp.src('./build')
     .pipe(webserver(
     {
-      directoryListing: 
+      directoryListing:
       {
           enable: true,
-          path: './build/index.html'
+          path: './build'
       },
-      open: true
+      open: 'http://localhost:8000/index.html'
     }));
 });
-
