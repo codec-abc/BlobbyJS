@@ -6,6 +6,7 @@ import BallControllerModule = require('../../../../controllers/BallController');
 import IUpdatableModule = require('../../../interfaces/IUpdatable');
 import NetViewModule = require('../interactive/NetView');
 import NetControllerModule = require('../../../../controllers/NetController');
+import OuterWallControllerModule = require('../../../../controllers/OuterWallController');
 
 export class GameForeground extends PIXI.Container
                             implements IUpdatableModule.IUpdatable {
@@ -26,8 +27,11 @@ export class GameForeground extends PIXI.Container
     /** @brief  Volley ball. */
     private m_ball: BallControllerModule.BallController ;
 
-    /**@brief   The net that can have interactions with the ball and players. */
-     private m_net: NetControllerModule.NetController ;
+    /** @brief  The net that can have interactions with the ball and players. */
+    private m_net: NetControllerModule.NetController ;
+
+    /** @brief  Outer walls. */
+    private m_outerWalls: Array<OuterWallControllerModule.OuterWallController> ;
 
     /**
      * @brief   Create a new instance of GameForeground.
@@ -36,6 +40,7 @@ export class GameForeground extends PIXI.Container
         super() ;
 
         this.m_sceneData = data ;
+        this.m_outerWalls = new Array<OuterWallControllerModule.OuterWallController>() ;
 
         // Be sure the net is loaded before players.
         NetViewModule.NetView.PreloadSprites() ;
@@ -67,6 +72,9 @@ export class GameForeground extends PIXI.Container
         this.m_net = new NetControllerModule.NetController(data) ;
 
         this.addChild(this.m_net.View.NetSprite) ;
+
+        // Set up the outer walls.
+        this.setupOuterWalls() ;
 
         PlayerViewModule.PlayerView.PreloadSprites() ;
         addEventListener(
@@ -133,18 +141,6 @@ export class GameForeground extends PIXI.Container
     }
 
     /**
-     * @brief   Get a Player data.
-     * @return  A new Player data.
-     */
-    private static get PlayerData(): PlayerControllerModule.PlayerSetupData {
-        let playerData: PlayerControllerModule.PlayerSetupData ;
-        playerData = new PlayerControllerModule.PlayerSetupData() ;
-        playerData.SpeedFactor = 1 ;
-        playerData.MaxScore = 15 ;
-        return playerData ;
-    }
-
-    /**
     * @brief   Creation of the Ball when its data are loaded.
     */
     private onLoadedBall() : void {
@@ -163,6 +159,31 @@ export class GameForeground extends PIXI.Container
 
         this.m_ball = new BallControllerModule.BallController(ballData) ;
         this.addChild(this.m_ball.View.BallSprite) ;
+    }
+
+    /**
+     * Set up the outer walls of the game area.
+     */
+    private setupOuterWalls(): void {
+        var leftWallPosition = new PIXI.Point(0, 0) ;
+        var leftOuterWall = new OuterWallControllerModule.OuterWallController(leftWallPosition) ;
+        this.m_outerWalls.push(leftOuterWall) ;
+
+        var rightWallPosition = new PIXI.Point(this.m_sceneData.Width, 0) ;
+        var rightOuterWall = new OuterWallControllerModule.OuterWallController(rightWallPosition) ;
+        this.m_outerWalls.push(rightOuterWall) ;
+    }
+
+    /**
+     * @brief   Get a Player data.
+     * @return  A new Player data.
+     */
+    private static get PlayerData(): PlayerControllerModule.PlayerSetupData {
+        let playerData: PlayerControllerModule.PlayerSetupData ;
+        playerData = new PlayerControllerModule.PlayerSetupData() ;
+        playerData.SpeedFactor = 1 ;
+        playerData.MaxScore = 15 ;
+        return playerData ;
     }
 
     /**
