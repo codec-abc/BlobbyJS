@@ -12,6 +12,16 @@ export class GameHUD extends PIXI.Container {
         return 'GameHUDLoaded' ;
     }
 
+    /** @brief  Default text on left. */
+    public static get LeftScoreDefaultText() : string {
+        return "Player #1" ;
+    }
+
+    /** @brief  Default text on right. */
+    public static get RightScoreDefaultText() : string {
+        return "Player #2" ;
+    }
+
     /** Scoring of the left player. */
     private m_leftScoring: PIXI.Text ;
 
@@ -42,11 +52,13 @@ export class GameHUD extends PIXI.Container {
         var style: Object = { font : "32px SomeTimeLater", fill: "white", };
 
         // Set the texts of the scores.
-        this.m_leftScoring = new PIXI.Text("Player 1", style) ;
+        var textLeft: string = GameHUD.LeftScoreDefaultText + " 00" ;
+        this.m_leftScoring = new PIXI.Text(textLeft, style) ;
         this.m_leftScoring.position.set(TextOffset, TextOffset) ;
         this.addChild(this.m_leftScoring) ;
 
-        this.m_rightScoring = new PIXI.Text("Player 2", style) ;
+        var textRight: string = GameHUD.RightScoreDefaultText + " 00" ;
+        this.m_rightScoring = new PIXI.Text(textRight, style) ;
         this.m_rightScoring.position.set(
             sceneWidth - TextOffset - this.m_rightScoring.width,
             TextOffset
@@ -55,5 +67,13 @@ export class GameHUD extends PIXI.Container {
 
         // Notify the HUD is loaded and ready to be updated/rendered.
         dispatchEvent(new Event(GameHUD.HUDLoadedEvent)) ;
+    }
+
+    /**
+     * @brief   Update the object.
+     */
+    public update(): void {
+        this.m_leftScoring.text = GameHUD.LeftScoreDefaultText + " : " + "0" ;
+        this.m_rightScoring.text = GameHUD.RightScoreDefaultText + " : " + "0" ;
     }
 }

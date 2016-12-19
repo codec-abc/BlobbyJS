@@ -102,6 +102,7 @@ export class GameScene extends PIXI.Container {
         this.m_physicsEngine.update() ;
 
         this.m_sceneLoader.Foreground.update() ;
+        this.m_sceneLoader.HUD.update() ;
         this.m_renderer.render(this) ;
         requestAnimationFrame(this.animate.bind(this)) ;
     }
