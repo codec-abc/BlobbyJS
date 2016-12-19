@@ -37,7 +37,7 @@ export class GameForeground extends PIXI.Container
 
         this.m_sceneData = data ;
 
-        // Be sure the net is loaded before players
+        // Be sure the net is loaded before players.
         NetViewModule.NetView.PreloadSprites() ;
         addEventListener(
             NetViewModule.NetView.NetLoadedEvent,
@@ -75,15 +75,15 @@ export class GameForeground extends PIXI.Container
         ) ;
     }
 
-    /**
+    /**NetPosition - NetWidth
      * @brief   Creation of the Players when their relative data are fully
      *          loaded.
      */
     private onLoadedPlayers() : void {
         const SceneWidth: number = this.m_sceneData.Width ;
-        const HalfSceneWidth: number = SceneWidth / 2 ;
-        const PositionXStep: number = HalfSceneWidth / 2 ;
-        const NetHalfWidth: number = this.m_net.View.NetSprite.width / 2 ;
+        const NetPosition: number = this.m_net.View.NetSprite.x ;
+        const NetWidth: number = this.m_net.View.NetSprite.width ;
+        const PositionXStep: number = SceneWidth / 4 ;
         const PositionY: number = this.m_sceneData.Height - SceneDataModule.SceneData.PlayersOffset ;
 
         // Set up the left player.
@@ -93,8 +93,14 @@ export class GameForeground extends PIXI.Container
             let playerData: PlayerControllerModule.PlayerSetupData ;
             playerData = GameForeground.PlayerData ;
 
+            // Compute the area in which the player can move.
+            var areaX: number = 0 ;
+            var areaY: number = 0 ;
+            var areaWidth: number = NetPosition ;
+            var areaHeight: number = this.m_sceneData.Height ;
+            playerData.Area = new PIXI.Rectangle(areaX, areaY, areaWidth, areaHeight) ;
+
             playerData.Position = new PIXI.Point(PositionXStep, PositionY) ;
-            playerData.Area = new PIXI.Rectangle(0, 0, HalfSceneWidth - NetHalfWidth, PositionXStep) ;
             playerData.Texture = PIXI.Texture.fromImage(TexturePlayer) ;
             this.m_leftPlayer = new PlayerControllerModule.PlayerController(playerData) ;
             this.addChild(this.m_leftPlayer.View.PlayerShadowSprite) ;
@@ -108,8 +114,14 @@ export class GameForeground extends PIXI.Container
             let playerData: PlayerControllerModule.PlayerSetupData ;
             playerData = GameForeground.PlayerData ;
 
+            // Compute the area in which the player can move.
+            var areaX: number = NetPosition + NetWidth ;
+            var areaY: number = 0 ;
+            var areaWidth: number = (SceneWidth / 2) - (NetWidth / 2) ;
+            var areaHeight: number = this.m_sceneData.Height ;
+            playerData.Area = new PIXI.Rectangle(areaX, areaY, areaWidth, areaHeight) ;
+
             playerData.Position = new PIXI.Point(PositionXStep * 3, PositionY) ;
-            playerData.Area = new PIXI.Rectangle(HalfSceneWidth + NetHalfWidth, 0, HalfSceneWidth - NetHalfWidth, PositionXStep) ;
             playerData.Texture = PIXI.Texture.fromImage(TexturePlayer) ;
             this.m_rightPlayer = new PlayerControllerModule.PlayerController(playerData) ;
             this.addChild(this.m_rightPlayer.View.PlayerShadowSprite) ;

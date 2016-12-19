@@ -70,7 +70,7 @@ export class PlayerView {
      */
     private static OnAssetsLoaded() : void {
         PlayerView.ShadowTexture = PIXI.Texture.fromImage(PlayerView.PlayerShadowPath) ;
-        PlayerView.ShadowXOffset = PlayerView.ShadowTexture.width / 4 ;
+        PlayerView.ShadowXOffset = PlayerView.ShadowTexture.width / 3.5 ;
         dispatchEvent(new Event(PlayerView.PlayersLoadedEvent)) ;
     }
 

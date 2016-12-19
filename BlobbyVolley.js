@@ -37,7 +37,7 @@ var BlobbyVolley = (function () {
      */
     BlobbyVolley.initializeMainWindow = function () {
         var mainWindowWidth = 1024;
-        var mainWindowHeight = 640;
+        var mainWindowHeight = 576;
         // Create the browser window.
         var mainWindow = new BrowserWindow({
             width: mainWindowWidth,

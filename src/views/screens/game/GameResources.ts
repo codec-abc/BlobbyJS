@@ -8,4 +8,9 @@ export class GameResources {
     public static get ImagesFolder() {
         return GameResources.ResourcesFolder + '/img' ;
     } ;
+
+    /** @brief  Path to fonts resources. */
+    public static get FontsFolder() {
+        return GameResources.ResourcesFolder + '/fonts' ;
+    } ;
 }

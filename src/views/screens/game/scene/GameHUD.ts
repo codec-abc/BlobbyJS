@@ -1,5 +1,8 @@
 import SceneDataModule = require('./SceneData');
 
+import ResourcesModule = require('../GameResources') ;
+let Resources = ResourcesModule.GameResources ;
+
 /**
  * @brief   Class to manage the HUD on the game screen.
  */
@@ -23,7 +26,7 @@ export class GameHUD extends PIXI.Container {
         super() ;
 
         var assetsLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader() ;
-        assetsLoader.add("FontLuckiestGuy", "https://fonts.googleapis.com/css?family=Luckiest+Guy&text=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ") ;
+        assetsLoader.add("SomeTimeLater", Resources.FontsFolder + "/SomeTimeLater.otf") ;
         assetsLoader.once("complete", this.onLoadedFonts.bind(this, sceneWidth)) ;
         assetsLoader.load() ;
     }
@@ -36,7 +39,7 @@ export class GameHUD extends PIXI.Container {
         const TextOffset: number = 20 ;
 
         // Set the style of the scores.
-        var style: Object = { font : "32px Luckiest Guy", fill: "white", };
+        var style: Object = { font : "32px SomeTimeLater", fill: "white", };
 
         // Set the texts of the scores.
         this.m_leftScoring = new PIXI.Text("Player 1", style) ;

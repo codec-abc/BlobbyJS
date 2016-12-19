@@ -25,7 +25,7 @@ export class GameScene extends PIXI.Container {
      * Get the initial height of the scene.
      * @return {number} Initial height of the scene.
      */
-    private static get InitialHeight(): number { return 640; }
+    private static get InitialHeight(): number { return 576; }
 
     /**
      * Get the ratio to correctly render the renderer.
