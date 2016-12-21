@@ -48,12 +48,6 @@ export class GameForeground extends PIXI.Container
             NetViewModule.NetView.NetLoadedEvent,
             this.onLoadedNet.bind(this)
         ) ;
-
-        BallViewModule.BallView.PreloadSprites() ;
-        addEventListener(
-            BallViewModule.BallView.BallLoadedEvent,
-            this.onLoadedBall.bind(this)
-        ) ;
     }
 
     private onLoadedNet(): void {
@@ -76,10 +70,18 @@ export class GameForeground extends PIXI.Container
         // Set up the outer walls.
         this.setupOuterWalls() ;
 
+        // Load and set players.
         PlayerViewModule.PlayerView.PreloadSprites() ;
         addEventListener(
             PlayerViewModule.PlayerView.PlayersLoadedEvent,
             this.onLoadedPlayers.bind(this)
+        ) ;
+
+        // Load and set the ball.
+        BallViewModule.BallView.PreloadSprites() ;
+        addEventListener(
+            BallViewModule.BallView.BallLoadedEvent,
+            this.onLoadedBall.bind(this)
         ) ;
     }
 
@@ -111,7 +113,7 @@ export class GameForeground extends PIXI.Container
             playerData.Position = new PIXI.Point(PositionXStep, PositionY) ;
             playerData.Texture = PIXI.Texture.fromImage(TexturePlayer) ;
             this.m_leftPlayer = new PlayerControllerModule.PlayerController(playerData) ;
-            this.addChild(this.m_leftPlayer.View.PlayerShadowSprite) ;
+            this.addChild(this.m_leftPlayer.View.ShadowSprite) ;
             this.addChild(this.m_leftPlayer.View.PlayerSprite) ;
         }
 
@@ -132,7 +134,7 @@ export class GameForeground extends PIXI.Container
             playerData.Position = new PIXI.Point(PositionXStep * 3, PositionY) ;
             playerData.Texture = PIXI.Texture.fromImage(TexturePlayer) ;
             this.m_rightPlayer = new PlayerControllerModule.PlayerController(playerData) ;
-            this.addChild(this.m_rightPlayer.View.PlayerShadowSprite) ;
+            this.addChild(this.m_rightPlayer.View.ShadowSprite) ;
             this.addChild(this.m_rightPlayer.View.PlayerSprite) ;
         }
 
@@ -145,12 +147,11 @@ export class GameForeground extends PIXI.Container
     */
     private onLoadedBall() : void {
         const PositionY: number = this.m_sceneData.Height - SceneDataModule.SceneData.PlayersOffset ;
-        const BallPosition: PIXI.Point = new PIXI.Point(250, 120) ;
         const BallTexture: string = BallViewModule.BallView.BallPath ;
 
         let ballData: BallControllerModule.BallSetupData ;
         ballData = new BallControllerModule.BallSetupData() ;
-        ballData.Position = BallPosition ;
+        ballData.Position = new PIXI.Point(0, PositionY) ; ;
         ballData.SpeedFactor = 5 ;
         ballData.Area = new PIXI.Rectangle(
                                            0, 0,
@@ -158,7 +159,10 @@ export class GameForeground extends PIXI.Container
                                           ) ;
 
         this.m_ball = new BallControllerModule.BallController(ballData) ;
+        this.addChild(this.m_ball.View.ShadowSprite) ;
         this.addChild(this.m_ball.View.BallSprite) ;
+
+        this.m_ball.reset(new PIXI.Point(250, 120)) ;
     }
 
     /**
@@ -204,8 +208,16 @@ export class GameForeground extends PIXI.Container
      * @brief   Update the object.
      */
     public update(): void {
-        this.m_leftPlayer.update() ;
-        this.m_rightPlayer.update() ;
-        this.m_ball.update() ;
+        if (this.m_leftPlayer) {
+            this.m_leftPlayer.update() ;
+        }
+
+        if (this.m_rightPlayer) {
+            this.m_rightPlayer.update() ;
+        }
+
+        if (this.m_ball) {
+            this.m_ball.update() ;
+        }
     }
 } ;

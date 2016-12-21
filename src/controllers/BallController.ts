@@ -61,6 +61,15 @@ export class BallController {
     }
 
     /**
+     * Reset the position of the Ball.
+     * @param {PIXI.Point} position The new position of the Ball.
+     */
+    public reset(position: PIXI.Point): void {
+        this.m_model.reset(position) ;
+        this.m_view.moveAt(this.m_model.CenterPosition) ;
+    }
+
+    /**
      * @brief   Set the model of the Ball.
      */
     private setModel(data: BallSetupData): void {

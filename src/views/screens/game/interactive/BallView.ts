@@ -21,8 +21,17 @@ export class BallView {
         return Resources.ImagesFolder + '/Ball.png' ;
     }
 
+    /** @brief  Offset to apply to the shadow on X axis. */
+    private static ShadowXOffset: number ;
+
+    /** @brief  Position on Y axis of the Ball on ground. */
+    private m_yOnGround: number ;
+
     /** @brief  Sprite of the Ball. */
     private m_ballSprite: PIXI.Sprite ;
+
+    /** @brief  Sprite of the shadow for the Ball. */
+    private m_shadowSprite: PIXI.Sprite ;
 
 
     /**
@@ -34,16 +43,23 @@ export class BallView {
                 texture: PIXI.Texture,
                 position: PIXI.Point
                ) {
+        this.m_yOnGround = position.y ;
+
         this.m_ballSprite = new PIXI.Sprite(texture) ;
         this.m_ballSprite.pivot = Geometry.GetCenter(this.m_ballSprite.getLocalBounds()) ;
+
+        this.m_shadowSprite = new PIXI.Sprite(Resources.ShadowTexture) ;
+        this.m_shadowSprite.position.y = position.y - (this.m_ballSprite.width / 2) ;
+
         this.moveAt(position) ;
     }
 
     /** @brief  Preload ball textures in order to synchronize loadings. */
     public static PreloadSprites() : void {
         var assetsLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader() ;
-        assetsLoader.add('FirstPlayer', BallView.BallPath) ;
-        assetsLoader.once('complete', BallView.OnAssetsLoaded) ;
+        assetsLoader.add('Ball', BallView.BallPath) ;
+        assetsLoader.add('Shadow', Resources.ShadowPath) ;
+        assetsLoader.once('complete', BallView.OnAssetsLoaded.bind(this)) ;
         assetsLoader.load() ;
     }
 
@@ -52,6 +68,7 @@ export class BallView {
      *          are loaded.
      */
     private static OnAssetsLoaded() : void {
+        BallView.ShadowXOffset = Resources.ShadowTexture.width / 2 ;
         dispatchEvent(new Event(BallView.BallLoadedEvent)) ;
     }
 
@@ -62,6 +79,8 @@ export class BallView {
     public moveAt(position: PIXI.Point) : void {
         this.m_ballSprite.position.x = position.x ;
         this.m_ballSprite.position.y = position.y ;
+
+        this.m_shadowSprite.position.x = this.m_ballSprite.position.x - BallView.ShadowXOffset ;
     }
 
     /**
@@ -78,5 +97,13 @@ export class BallView {
      */
     public get BallSprite(): PIXI.Sprite {
         return this.m_ballSprite ;
+    }
+
+    /**
+     * @brief   Get sprite of the Player shadow.
+     * @return  Sprite of the Player shadow.
+     */
+    public get ShadowSprite(): PIXI.Sprite {
+        return this.m_shadowSprite ;
     }
 } ;
