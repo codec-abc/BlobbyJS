@@ -76,6 +76,7 @@ export class PlayerView {
 
         // Adjust the shadow sprite position to the player sprite.
         this.m_shadowSprite.position.x = position.x - PlayerView.ShadowXOffset ;
+        this.m_shadowSprite.alpha = position.y / this.m_shadowSprite.position.y ;
     }
 
     /**
