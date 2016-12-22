@@ -169,11 +169,11 @@ export class GameForeground extends PIXI.Container
      * Set up the outer walls of the game area.
      */
     private setupOuterWalls(): void {
-        var leftWallPosition = new PIXI.Point(0, 0) ;
+        var leftWallPosition = new PIXI.Point(0, -this.m_sceneData.Height) ;
         var leftOuterWall = new OuterWallControllerModule.OuterWallController(leftWallPosition) ;
         this.m_outerWalls.push(leftOuterWall) ;
 
-        var rightWallPosition = new PIXI.Point(this.m_sceneData.Width, 0) ;
+        var rightWallPosition = new PIXI.Point(this.m_sceneData.Width, -this.m_sceneData.Height) ;
         var rightOuterWall = new OuterWallControllerModule.OuterWallController(rightWallPosition) ;
         this.m_outerWalls.push(rightOuterWall) ;
     }
