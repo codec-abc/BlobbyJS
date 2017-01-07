@@ -25,7 +25,7 @@ export class GameScene extends PIXI.Container {
      * Get the initial height of the scene.
      * @return {number} Initial height of the scene.
      */
-    private static get InitialHeight(): number { return 640; }
+    private static get InitialHeight(): number { return 576; }
 
     /**
      * Get the ratio to correctly render the renderer.
@@ -90,8 +90,9 @@ export class GameScene extends PIXI.Container {
     private onSceneLoaded(): void {
         this.addChild(this.m_sceneLoader.Background) ;
         this.addChild(this.m_sceneLoader.Foreground) ;
+        this.addChild(this.m_sceneLoader.HUD) ;
 
-        requestAnimationFrame(this.animate.bind(this)) ;
+        this.animate() ;
     }
 
     /**
@@ -101,6 +102,7 @@ export class GameScene extends PIXI.Container {
         this.m_physicsEngine.update() ;
 
         this.m_sceneLoader.Foreground.update() ;
+        this.m_sceneLoader.HUD.update() ;
         this.m_renderer.render(this) ;
         requestAnimationFrame(this.animate.bind(this)) ;
     }

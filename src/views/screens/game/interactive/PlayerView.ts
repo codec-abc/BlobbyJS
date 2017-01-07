@@ -21,14 +21,6 @@ export class PlayerView {
         return Resources.ImagesFolder + '/RightPlayer.png' ;
     }
 
-    /** @brief  Path to the sprite texture of the player shadow. */
-    public static get PlayerShadowPath(): string {
-        return Resources.ImagesFolder + '/PlayerShadow.png' ;
-    }
-
-    /** @brief  Texture of player shadow. */
-    private static ShadowTexture: PIXI.Texture ;
-
     /** @brief  Offset to apply to the shadow on X axis. */
     private static ShadowXOffset: number ;
 
@@ -48,8 +40,8 @@ export class PlayerView {
                 position: PIXI.Point
                ) {
         this.m_playerSprite = new PIXI.Sprite(texture) ;
-        this.m_shadowSprite = new PIXI.Sprite(PlayerView.ShadowTexture) ;
-        this.m_shadowSprite.position.y += position.y + (this.m_playerSprite.height * 0.62) ;
+        this.m_shadowSprite = new PIXI.Sprite(Resources.ShadowTexture) ;
+        this.m_shadowSprite.position.y = position.y + (this.m_playerSprite.height * 0.62) ;
 
         this.moveAt(position) ;
     }
@@ -59,7 +51,7 @@ export class PlayerView {
         var assetsLoader: PIXI.loaders.Loader = new PIXI.loaders.Loader() ;
         assetsLoader.add('FirstPlayer', PlayerView.LeftPlayerPath) ;
         assetsLoader.add('SecondPlayer', PlayerView.RightPlayerPath) ;
-        assetsLoader.add('PlayerShadow', PlayerView.PlayerShadowPath) ;
+        assetsLoader.add('Shadow', Resources.ShadowPath) ;
         assetsLoader.once('complete', PlayerView.OnAssetsLoaded) ;
         assetsLoader.load() ;
     }
@@ -69,8 +61,8 @@ export class PlayerView {
      *          are loaded.
      */
     private static OnAssetsLoaded() : void {
-        PlayerView.ShadowTexture = PIXI.Texture.fromImage(PlayerView.PlayerShadowPath) ;
-        PlayerView.ShadowXOffset = PlayerView.ShadowTexture.width / 4 ;
+        Resources.ShadowTexture = PIXI.Texture.fromImage(Resources.ShadowPath) ;
+        PlayerView.ShadowXOffset = Resources.ShadowTexture.width / 3.5 ;
         dispatchEvent(new Event(PlayerView.PlayersLoadedEvent)) ;
     }
 
@@ -84,6 +76,7 @@ export class PlayerView {
 
         // Adjust the shadow sprite position to the player sprite.
         this.m_shadowSprite.position.x = position.x - PlayerView.ShadowXOffset ;
+        this.m_shadowSprite.alpha = position.y / this.m_shadowSprite.position.y ;
     }
 
     /**
@@ -98,7 +91,7 @@ export class PlayerView {
      * @brief   Get sprite of the Player shadow.
      * @return  Sprite of the Player shadow.
      */
-    public get PlayerShadowSprite(): PIXI.Sprite {
+    public get ShadowSprite(): PIXI.Sprite {
         return this.m_shadowSprite ;
     }
 } ;

@@ -61,6 +61,14 @@ export class Behavior extends KinematicBodyModule.KinematicBody {
         this.CurrentPosition.x += this.m_moveForce ;
         this.m_moveForce = 0 ;
 
+        // Clamp the Player position.
+        if (this.CurrentPosition.x < this.MinBound) {
+            this.CurrentPosition.x = this.MinBound ;
+        }
+        else if (this.CurrentPosition.x > this.MaxBound) {
+            this.CurrentPosition.x = this.MaxBound ;
+        }
+
         dispatchEvent(new Event(Behavior.MovePlayerUpdateEvent)) ;
     }
 

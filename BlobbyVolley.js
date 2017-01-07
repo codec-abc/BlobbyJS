@@ -37,7 +37,7 @@ var BlobbyVolley = (function () {
      */
     BlobbyVolley.initializeMainWindow = function () {
         var mainWindowWidth = 1024;
-        var mainWindowHeight = 640;
+        var mainWindowHeight = 576;
         // Create the browser window.
         var mainWindow = new BrowserWindow({
             width: mainWindowWidth,
@@ -47,8 +47,6 @@ var BlobbyVolley = (function () {
         mainWindow.loadURL('file://' + __dirname + '/index.html');
         // Open the DevTools.
         //mainWindow.webContents.openDevTools();
-        // Unable resizing.
-        mainWindow.setResizable(false);
         // Emitted when the window is closed.
         mainWindow.on('closed', function () {
             // Dereference the window object, usually you would store windows

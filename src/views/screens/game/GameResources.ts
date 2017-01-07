@@ -8,4 +8,18 @@ export class GameResources {
     public static get ImagesFolder() {
         return GameResources.ResourcesFolder + '/img' ;
     } ;
+
+    /** @brief  Path to fonts resources. */
+    public static get FontsFolder() {
+        return GameResources.ResourcesFolder + '/fonts' ;
+    } ;
+
+
+    /** @brief  Texture of player shadow. */
+    public static ShadowTexture: PIXI.Texture ;
+
+    /** @brief  Path to the sprite texture of the shadow. */
+    public static get ShadowPath(): string {
+        return GameResources.ImagesFolder + '/Shadow.png' ;
+    }
 }

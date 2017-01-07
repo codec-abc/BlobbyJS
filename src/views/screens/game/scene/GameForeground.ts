@@ -6,6 +6,7 @@ import BallControllerModule = require('../../../../controllers/BallController');
 import IUpdatableModule = require('../../../interfaces/IUpdatable');
 import NetViewModule = require('../interactive/NetView');
 import NetControllerModule = require('../../../../controllers/NetController');
+import OuterWallControllerModule = require('../../../../controllers/OuterWallController');
 
 export class GameForeground extends PIXI.Container
                             implements IUpdatableModule.IUpdatable {
@@ -26,8 +27,11 @@ export class GameForeground extends PIXI.Container
     /** @brief  Volley ball. */
     private m_ball: BallControllerModule.BallController ;
 
-    /**@brief   The net that can have interactions with the ball and players. */
-     private m_net: NetControllerModule.NetController ;
+    /** @brief  The net that can have interactions with the ball and players. */
+    private m_net: NetControllerModule.NetController ;
+
+    /** @brief  Outer walls. */
+    private m_outerWalls: Array<OuterWallControllerModule.OuterWallController> ;
 
     /**
      * @brief   Create a new instance of GameForeground.
@@ -36,18 +40,13 @@ export class GameForeground extends PIXI.Container
         super() ;
 
         this.m_sceneData = data ;
+        this.m_outerWalls = new Array<OuterWallControllerModule.OuterWallController>() ;
 
-        // Be sure the net is loaded before players
+        // Be sure the net is loaded before players.
         NetViewModule.NetView.PreloadSprites() ;
         addEventListener(
             NetViewModule.NetView.NetLoadedEvent,
             this.onLoadedNet.bind(this)
-        ) ;
-
-        BallViewModule.BallView.PreloadSprites() ;
-        addEventListener(
-            BallViewModule.BallView.BallLoadedEvent,
-            this.onLoadedBall.bind(this)
         ) ;
     }
 
@@ -68,22 +67,33 @@ export class GameForeground extends PIXI.Container
 
         this.addChild(this.m_net.View.NetSprite) ;
 
+        // Set up the outer walls.
+        this.setupOuterWalls() ;
+
+        // Load and set players.
         PlayerViewModule.PlayerView.PreloadSprites() ;
         addEventListener(
             PlayerViewModule.PlayerView.PlayersLoadedEvent,
             this.onLoadedPlayers.bind(this)
         ) ;
+
+        // Load and set the ball.
+        BallViewModule.BallView.PreloadSprites() ;
+        addEventListener(
+            BallViewModule.BallView.BallLoadedEvent,
+            this.onLoadedBall.bind(this)
+        ) ;
     }
 
-    /**
+    /**NetPosition - NetWidth
      * @brief   Creation of the Players when their relative data are fully
      *          loaded.
      */
     private onLoadedPlayers() : void {
         const SceneWidth: number = this.m_sceneData.Width ;
-        const HalfSceneWidth: number = SceneWidth / 2 ;
-        const PositionXStep: number = HalfSceneWidth / 2 ;
-        const NetHalfWidth: number = this.m_net.View.NetSprite.width / 2 ;
+        const NetPosition: number = this.m_net.View.NetSprite.x ;
+        const NetWidth: number = this.m_net.View.NetSprite.width ;
+        const PositionXStep: number = SceneWidth / 4 ;
         const PositionY: number = this.m_sceneData.Height - SceneDataModule.SceneData.PlayersOffset ;
 
         // Set up the left player.
@@ -93,11 +103,17 @@ export class GameForeground extends PIXI.Container
             let playerData: PlayerControllerModule.PlayerSetupData ;
             playerData = GameForeground.PlayerData ;
 
+            // Compute the area in which the player can move.
+            var areaX: number = 0 ;
+            var areaY: number = 0 ;
+            var areaWidth: number = NetPosition ;
+            var areaHeight: number = this.m_sceneData.Height ;
+            playerData.Area = new PIXI.Rectangle(areaX, areaY, areaWidth, areaHeight) ;
+
             playerData.Position = new PIXI.Point(PositionXStep, PositionY) ;
-            playerData.Area = new PIXI.Rectangle(0, 0, HalfSceneWidth - NetHalfWidth, PositionXStep) ;
             playerData.Texture = PIXI.Texture.fromImage(TexturePlayer) ;
             this.m_leftPlayer = new PlayerControllerModule.PlayerController(playerData) ;
-            this.addChild(this.m_leftPlayer.View.PlayerShadowSprite) ;
+            this.addChild(this.m_leftPlayer.View.ShadowSprite) ;
             this.addChild(this.m_leftPlayer.View.PlayerSprite) ;
         }
 
@@ -108,16 +124,58 @@ export class GameForeground extends PIXI.Container
             let playerData: PlayerControllerModule.PlayerSetupData ;
             playerData = GameForeground.PlayerData ;
 
+            // Compute the area in which the player can move.
+            var areaX: number = NetPosition + NetWidth ;
+            var areaY: number = 0 ;
+            var areaWidth: number = (SceneWidth / 2) - (NetWidth / 2) ;
+            var areaHeight: number = this.m_sceneData.Height ;
+            playerData.Area = new PIXI.Rectangle(areaX, areaY, areaWidth, areaHeight) ;
+
             playerData.Position = new PIXI.Point(PositionXStep * 3, PositionY) ;
-            playerData.Area = new PIXI.Rectangle(HalfSceneWidth + NetHalfWidth, 0, HalfSceneWidth - NetHalfWidth, PositionXStep) ;
             playerData.Texture = PIXI.Texture.fromImage(TexturePlayer) ;
             this.m_rightPlayer = new PlayerControllerModule.PlayerController(playerData) ;
-            this.addChild(this.m_rightPlayer.View.PlayerShadowSprite) ;
+            this.addChild(this.m_rightPlayer.View.ShadowSprite) ;
             this.addChild(this.m_rightPlayer.View.PlayerSprite) ;
         }
 
         // Notify the foreground is loaded and ready to be updated/rendered.
         dispatchEvent(new Event(GameForeground.ForegroundLoadedEvent)) ;
+    }
+
+    /**
+    * @brief   Creation of the Ball when its data are loaded.
+    */
+    private onLoadedBall() : void {
+        const PositionY: number = this.m_sceneData.Height - SceneDataModule.SceneData.PlayersOffset ;
+        const BallTexture: string = BallViewModule.BallView.BallPath ;
+
+        let ballData: BallControllerModule.BallSetupData ;
+        ballData = new BallControllerModule.BallSetupData() ;
+        ballData.Position = new PIXI.Point(0, PositionY) ; ;
+        ballData.SpeedFactor = 5 ;
+        ballData.Area = new PIXI.Rectangle(
+                                           0, 0,
+                                           this.m_sceneData.Width, PositionY
+                                          ) ;
+
+        this.m_ball = new BallControllerModule.BallController(ballData) ;
+        this.addChild(this.m_ball.View.ShadowSprite) ;
+        this.addChild(this.m_ball.View.BallSprite) ;
+
+        this.m_ball.reset(new PIXI.Point(250, 120)) ;
+    }
+
+    /**
+     * Set up the outer walls of the game area.
+     */
+    private setupOuterWalls(): void {
+        var leftWallPosition = new PIXI.Point(0, -this.m_sceneData.Height) ;
+        var leftOuterWall = new OuterWallControllerModule.OuterWallController(leftWallPosition) ;
+        this.m_outerWalls.push(leftOuterWall) ;
+
+        var rightWallPosition = new PIXI.Point(this.m_sceneData.Width, -this.m_sceneData.Height) ;
+        var rightOuterWall = new OuterWallControllerModule.OuterWallController(rightWallPosition) ;
+        this.m_outerWalls.push(rightOuterWall) ;
     }
 
     /**
@@ -130,27 +188,6 @@ export class GameForeground extends PIXI.Container
         playerData.SpeedFactor = 1 ;
         playerData.MaxScore = 15 ;
         return playerData ;
-    }
-
-    /**
-    * @brief   Creation of the Ball when its data are loaded.
-    */
-    private onLoadedBall() : void {
-        const PositionY: number = this.m_sceneData.Height - SceneDataModule.SceneData.PlayersOffset ;
-        const BallPosition: PIXI.Point = new PIXI.Point(250, 120) ;
-        const BallTexture: string = BallViewModule.BallView.BallPath ;
-
-        let ballData: BallControllerModule.BallSetupData ;
-        ballData = new BallControllerModule.BallSetupData() ;
-        ballData.Position = BallPosition ;
-        ballData.SpeedFactor = 5 ;
-        ballData.Area = new PIXI.Rectangle(
-                                           0, 0,
-                                           this.m_sceneData.Width, PositionY
-                                          ) ;
-
-        this.m_ball = new BallControllerModule.BallController(ballData) ;
-        this.addChild(this.m_ball.View.BallSprite) ;
     }
 
     /**
@@ -171,8 +208,16 @@ export class GameForeground extends PIXI.Container
      * @brief   Update the object.
      */
     public update(): void {
-        this.m_leftPlayer.update() ;
-        this.m_rightPlayer.update() ;
-        this.m_ball.update() ;
+        if (this.m_leftPlayer) {
+            this.m_leftPlayer.update() ;
+        }
+
+        if (this.m_rightPlayer) {
+            this.m_rightPlayer.update() ;
+        }
+
+        if (this.m_ball) {
+            this.m_ball.update() ;
+        }
     }
 } ;
