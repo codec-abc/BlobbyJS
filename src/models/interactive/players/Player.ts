@@ -1,11 +1,12 @@
 import BehaviorModule = require('./Behavior');
 import JumpModule = require('./Jump');
 import ScoringModule = require('./Scoring');
+import IUpdatableModule = require('../../../interfaces/IUpdatable');
 
 /**
  * @brief   A Player is an entity that is controlled by the user.
  */
-export class Player {
+export class Player implements IUpdatableModule.IUpdatable {
     /** @brief  Score management of the Player. */
     private m_scoring: ScoringModule.Scoring ;
 
@@ -71,5 +72,13 @@ export class Player {
      */
     public get ScorePoints(): number {
         return this.m_scoring.CurrentPoints ;
+    }
+
+    /**
+     * @brief   Update the object.
+     */
+    public update(): void {
+        this.m_jump.update();
+        this.Behavior.update() ;
     }
 } ;

@@ -20,6 +20,9 @@ class GameScreen extends ScreenBase.Screen {
      */
     private m_scene: GameSceneModule.GameScene ;
 
+    /* @brief   Handle to the interval set for main loop update.  */
+    private m_intervalHandle? : number ;
+
     /**
      * @brief   Creation of the GameScreen.
      */
@@ -37,6 +40,8 @@ class GameScreen extends ScreenBase.Screen {
                          GameSceneLoaderModule.GameSceneLoader.SceneLoadedEvent,
                          this.onSceneLoaded.bind(this)
                         ) ;
+
+       this.m_intervalHandle = setInterval(this.frameTick.bind(this), 1000/60) ;                        
     }
 
     /**
@@ -44,6 +49,11 @@ class GameScreen extends ScreenBase.Screen {
      */
     private onSceneLoaded() : void {
         this.setupControls() ;
+    }
+
+    private frameTick() : void {
+        this.m_scene.update() ;
+        this.update() ;
     }
 
     /**

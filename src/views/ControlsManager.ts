@@ -1,5 +1,7 @@
 /// <reference path="../../typings/jquery/jquery.d.ts"/>
 
+import IUpdatableModule = require('../interfaces/IUpdatable');
+
 /**
  * @brief   Association of a control name to its related callback.
  */
@@ -7,7 +9,7 @@ interface ControlCallback {
     [control: number]: () => void ;
 } ;
 
-export class ControlsManager {
+export class ControlsManager implements IUpdatableModule.IUpdatable {
     /** @brief  List of all avalaible keyboard controls with their callback. */
     private m_keyboardCallbacks: ControlCallback = { } ;
 
@@ -26,9 +28,6 @@ export class ControlsManager {
     constructor() {
         this.setupKeyboard() ;
         this.setupMouse() ;
-
-        // setInterval(this.keyboardLoop.bind(this), 16) ;
-        requestAnimationFrame(this.keyboardLoop.bind(this)) ;
     }
 
     /**
@@ -95,8 +94,6 @@ export class ControlsManager {
      * @brief   Loop to have smooth animations when using keyboard.
      */
     private keyboardLoop() : void {
-        requestAnimationFrame(this.keyboardLoop.bind(this)) ;
-
         var self: ControlsManager = this ;
         this.m_activeKeyboardControls.forEach(
             function(
@@ -108,6 +105,12 @@ export class ControlsManager {
         }) ;
     }
 
+    /**
+     * @brief   Update the object.
+     */
+    public update(): void {
+        this.keyboardLoop() ;
+    } 
 
     /**
      * @brief   Add a keyboard control with its callback.

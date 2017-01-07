@@ -1,10 +1,11 @@
 import ControlsManager = require('../ControlsManager');
+import IUpdatableModule = require('../../interfaces/IUpdatable');
 let Controls = ControlsManager.ControlsManager ;
 
 /**
  * @brief   Abstract class that represents screens.
  */
-export abstract class Screen {
+export abstract class Screen implements IUpdatableModule.IUpdatable {
     /** @brief  Controls used on the screen. */
     private m_controls : ControlsManager.ControlsManager ;
 
@@ -44,4 +45,12 @@ export abstract class Screen {
                               ) : void {
         this.m_controls.addMouseCallback(mouse, callback) ;
     }
+
+    /**
+     * @brief   Update the object.
+     */
+    public update(): void {
+        this.m_controls.update() ;
+    } 
+
 } ;

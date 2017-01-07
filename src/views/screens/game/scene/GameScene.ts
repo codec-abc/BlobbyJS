@@ -7,6 +7,7 @@ import GameForegroundModule = require('./GameForeground');
 import ResourcesModule = require('../GameResources') ;
 import PlayerControllerModule = require('../../../../controllers/PlayerController');
 import PhysicsEngineModule = require('../../../../models/physics/PhysicsEngine');
+import IUpdatableModule = require('../../../../interfaces/IUpdatable');
 
 let Resources = ResourcesModule.GameResources ;
 let PhysicsEngine = PhysicsEngineModule.PhysicsEngine ;
@@ -14,7 +15,7 @@ let PhysicsEngine = PhysicsEngineModule.PhysicsEngine ;
 /**
  * @brief   Scene of the game stage.
  */
-export class GameScene extends PIXI.Container {
+export class GameScene extends PIXI.Container implements IUpdatableModule.IUpdatable {
     /**
      * Get the initial width of the scene.
      * @return {number} Initial width of the scene.
@@ -46,12 +47,16 @@ export class GameScene extends PIXI.Container {
     /** @brief  The physics engine to update all physics objects. */
     private m_physicsEngine: PhysicsEngineModule.PhysicsEngine ;
 
+    /** @brief  Flag to tell if the scene has finished loading to avoid call update when scene is not ready. */
+    private m_hasSceneFinishedLoading : boolean ;
+
     /**
      * @brief   Create a new GameScene.
      */
     constructor() {
         super() ;
 
+        this.m_hasSceneFinishedLoading = false ;
         var width: number = GameScene.InitialWidth ;
         var height: number =  GameScene.InitialHeight ;
         this.m_physicsEngine = new PhysicsEngineModule.PhysicsEngine() ;
@@ -92,19 +97,20 @@ export class GameScene extends PIXI.Container {
         this.addChild(this.m_sceneLoader.Foreground) ;
         this.addChild(this.m_sceneLoader.HUD) ;
 
-        this.animate() ;
+        this.m_hasSceneFinishedLoading = true ;
     }
 
     /**
      * @brief   Update the animation of the scene.
      */
     private animate(): void {
-        this.m_physicsEngine.update() ;
+        if (this.m_hasSceneFinishedLoading) {
+            this.m_physicsEngine.update() ;
 
-        this.m_sceneLoader.Foreground.update() ;
-        this.m_sceneLoader.HUD.update() ;
-        this.m_renderer.render(this) ;
-        requestAnimationFrame(this.animate.bind(this)) ;
+            this.m_sceneLoader.Foreground.update() ;
+            this.m_sceneLoader.HUD.update() ;
+            this.m_renderer.render(this) ;
+        }
     }
 
 
@@ -121,4 +127,11 @@ export class GameScene extends PIXI.Container {
    public get RightPlayer(): PlayerControllerModule.PlayerController {
        return this.m_sceneLoader.Foreground.RightPlayer ;
    }
+
+   /**
+     * @brief   Update the object.
+     */
+    public update(): void {
+        this.animate();
+    } 
 } ;

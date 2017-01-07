@@ -1,7 +1,9 @@
+import IUpdatableModule = require('../../../interfaces/IUpdatable');
+
 /**
  * @brief   Make the player jump.
  */
-export class Jump {
+export class Jump implements IUpdatableModule.IUpdatable {
     /** @brief  Event for jumping player update position. */
     public static get JumpPlayerUpdateEvent(): string { return 'JumpPlayer' ; }
 
@@ -26,10 +28,12 @@ export class Jump {
     /** @brief  Force of the jump. */
     private m_jumpForce: number ;
 
-    /** @brief  Flag that indicates whether the player is currently jumping. */
     private m_amountJumps: number ;
 
     private m_framesSinceLastJump: number ;
+
+    /** @brief Flag that indicate if we should call the updateJump in the main loop. */
+    private m_shouldUpdateJumpOnUpdate : boolean;
 
     /** @brief  Position of the player to be on ground. */
     private m_onGroundPosition: number ;
@@ -41,6 +45,7 @@ export class Jump {
         this.m_speed = speed ;
         this.m_amountJumps = 0 ;
         this.m_speed.y = 0 ;
+        this.m_shouldUpdateJumpOnUpdate = false;
 
         // Used to enable the first jump.
         this.m_framesSinceLastJump = Jump.AmountFrameBeforeJump ;
@@ -55,7 +60,7 @@ export class Jump {
             this.m_framesSinceLastJump = 0 ;
 
             if (this.m_amountJumps == 1) {
-                requestAnimationFrame(this.updateJump.bind(this)) ;
+                this.m_shouldUpdateJumpOnUpdate = true ;
             }
         }
     }
@@ -68,18 +73,29 @@ export class Jump {
 
         if (this.m_position.y < this.m_onGroundPosition) {
             this.m_framesSinceLastJump++ ;
-            requestAnimationFrame(this.updateJump.bind(this)) ;
+            this.m_shouldUpdateJumpOnUpdate = true ;
         }
         else {
             this.m_position.y = this.m_onGroundPosition ;
             this.m_amountJumps = 0 ;
             this.m_speed.y = 0 ;
             this.m_framesSinceLastJump = Jump.AmountFrameBeforeJump ;
+             this.m_shouldUpdateJumpOnUpdate = false ;
         }
     }
 
     /** @brief  Get the force applied on Player for jumping. */
     public get Force() : number {
         return this.m_speed.y ;
+    }
+
+    /**
+     * @brief   Update the object.
+     */
+    public update(): void {
+        if (this.m_shouldUpdateJumpOnUpdate) {
+            this.updateJump();
+        }
+
     }
 } ;

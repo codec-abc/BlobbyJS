@@ -2,11 +2,12 @@ import PlayerViewModule = require('../views/screens/game/interactive/PlayerView'
 import PlayerModelModule = require('../models/interactive/players/Player') ;
 import JumpPlayerModelModule = require('../models/interactive/players/Jump') ;
 import BehaviorPlayerModelModule = require('../models/interactive/players/Behavior') ;
+import IUpdatableModule = require('../interfaces/IUpdatable');
 
 /**
  * @brief   Data to set up a Player.
  */
-export class PlayerSetupData {
+export class PlayerSetupData  {
     /** @brief  Position of the Player. */
     private m_position: PIXI.Point ;
 
@@ -60,7 +61,7 @@ export class PlayerSetupData {
 /**
  * @brief   Controller of a Player.
  */
-export class PlayerController {
+export class PlayerController implements IUpdatableModule.IUpdatable {
     /** @brief  View of the Player. */
     private m_view: PlayerViewModule.PlayerView ;
 
@@ -128,7 +129,7 @@ export class PlayerController {
      */
     public update(): void {
         if (this.m_model != undefined) {
-            this.m_model.Behavior.update() ;
+            this.m_model.update();
         }
     }
 
