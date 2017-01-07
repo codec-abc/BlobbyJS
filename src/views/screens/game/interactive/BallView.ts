@@ -82,7 +82,8 @@ export class BallView {
 
         this.m_shadowSprite.position.x = this.m_ballSprite.position.x - BallView.ShadowXOffset ;
 
-        this.m_shadowSprite.alpha = position.y / this.m_yOnGround ;
+        this.m_shadowSprite.alpha = Math.max(0.2, position.y / this.m_yOnGround) ;
+
     }
 
     /**
